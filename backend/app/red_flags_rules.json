@@ -1,0 +1,37 @@
+[
+  {
+    "rule_id": "RF001",
+    "name": "Severe Chest Pain",
+    "keywords": ["chest pain", "angina", "tightness in chest", "chest pressure", "radiation to arm", "radiation to jaw"],
+    "severity": "critical",
+    "description": "Patient reported severe chest pain or possible acute coronary syndrome."
+  },
+  {
+    "rule_id": "RF002",
+    "name": "High Fever / Severe Infection",
+    "keywords": ["high fever", "102", "103", "104", "chills", "stiff neck", "hyperpyrexia"],
+    "severity": "high",
+    "description": "Signs of severe high fever or possible systemic infection."
+  },
+  {
+    "rule_id": "RF003",
+    "name": "Hypertensive Crisis",
+    "keywords": ["bp > 180", "180/110", "190/", "200/", "hypertension crisis"],
+    "severity": "critical",
+    "description": "Severely elevated blood pressure recorded in history or document vitals."
+  },
+  {
+    "rule_id": "RF004",
+    "name": "Shortness of Breath / Hypoxia",
+    "keywords": ["shortness of breath", "breathless", "spo2 < 90", "difficulty breathing", "wheezing", "gasping"],
+    "severity": "critical",
+    "description": "Respiratory distress or low oxygen saturation."
+  },
+  {
+    "rule_id": "RF005",
+    "name": "Severe Allergic Reaction",
+    "keywords": ["anaphylaxis", "swallowing difficulty", "swollen lips", "hives all over"],
+    "severity": "high",
+    "description": "Signs of acute allergic reaction or airway compromise."
+  }
+]

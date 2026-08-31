@@ -1,0 +1,36 @@
+# Python / Virtualenv
+venv/
+backend/venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Databases & Storage
+*.db
+*.sqlite
+*.sqlite3
+dev.db
+backend/uploads/
+
+# Node.js / Next.js
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+out/
+build/
+dist/
+
+# Environment variables & secrets
+.env
+.env.local
+.env.production.local
+.env.development.local
+
+# OS / Editor files
+.DS_Store
+*.swp
+.idea/
+.vscode/

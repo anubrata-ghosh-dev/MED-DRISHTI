@@ -1,0 +1,54 @@
+{
+  "version": "1.0",
+  "start_question_id": "chief_complaint",
+  "questions": [
+    {
+      "id": "chief_complaint",
+      "text": "What brings you in today? Please describe your main problem.",
+      "text_hi": "आज आप क्यों आए हैं? अपनी मुख्य समस्या बताएं।",
+      "field": "chief_complaint",
+      "next": "duration",
+      "required": true
+    },
+    {
+      "id": "duration",
+      "text": "How long have you had this problem?",
+      "text_hi": "यह समस्या कितने समय से है?",
+      "field": "hpi_duration",
+      "next": "severity",
+      "required": true
+    },
+    {
+      "id": "severity",
+      "text": "On a scale of 1 to 10, how severe is your discomfort right now? 1 is very mild, 10 is unbearable.",
+      "text_hi": "1 से 10 के पैमाने पर, अभी आपकी तकलीफ कितनी है?",
+      "field": "hpi_severity",
+      "next": "location",
+      "required": true
+    },
+    {
+      "id": "location",
+      "text": "Where exactly do you feel this discomfort? Point to the area if possible.",
+      "text_hi": "यह तकलीफ ठीक कहाँ है?",
+      "field": "hpi_location",
+      "next": "medications",
+      "required": false
+    },
+    {
+      "id": "medications",
+      "text": "Are you currently taking any medications? If yes, please name them.",
+      "text_hi": "क्या आप अभी कोई दवाई ले रहे हैं?",
+      "field": "medications",
+      "next": "allergies",
+      "required": false
+    },
+    {
+      "id": "allergies",
+      "text": "Do you have any known allergies to medicines or food?",
+      "text_hi": "क्या आपको किसी दवाई या खाने से एलर्जी है?",
+      "field": "allergies",
+      "next": null,
+      "required": false
+    }
+  ]
+}
