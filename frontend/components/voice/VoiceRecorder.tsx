@@ -114,7 +114,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
           <button
             type="button"
             onClick={startRecording}
-            className="w-24 h-24 rounded-full bg-primary hover:bg-blue-700 text-white flex items-center justify-center text-4xl shadow-xl shadow-blue-500/30 transition-all transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300"
+            className="flex h-24 w-24 items-center justify-center rounded-full bg-[var(--pulse-teal)] text-4xl text-white shadow-xl shadow-[rgba(31,111,99,0.22)] transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-[rgba(31,111,99,0.18)]"
             aria-label="Start Recording"
           >
             🎙️

@@ -28,13 +28,13 @@ export const BigButton: React.FC<BigButtonProps> = ({
 
   const variantStyles = {
     primary:
-      'bg-primary text-white hover:bg-blue-700 focus:ring-blue-300 shadow-blue-500/20',
+      'bg-[var(--pulse-teal)] text-white hover:brightness-110 focus:ring-[rgba(31,111,99,0.24)] shadow-[rgba(31,111,99,0.20)]',
     secondary:
-      'bg-slate-200 text-slate-800 hover:bg-slate-300 focus:ring-slate-400 shadow-slate-500/10',
+      'bg-slate-200 text-[var(--chart-ink)] hover:bg-slate-300 focus:ring-slate-300 shadow-slate-500/10',
     danger:
-      'bg-danger text-white hover:bg-red-700 focus:ring-red-300 shadow-red-500/20',
+      'bg-[var(--alert-coral)] text-white hover:brightness-110 focus:ring-[rgba(196,67,46,0.22)] shadow-[rgba(196,67,46,0.18)]',
     success:
-      'bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-300 shadow-emerald-500/20',
+      'bg-[var(--pulse-teal)] text-white hover:brightness-110 focus:ring-[rgba(31,111,99,0.24)] shadow-[rgba(31,111,99,0.20)]',
   };
 
   return (

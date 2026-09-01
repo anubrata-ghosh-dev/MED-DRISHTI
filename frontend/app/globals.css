@@ -2,13 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --clinical-mist: #edf1ee;
+  --chart-ink: #16241f;
+  --pulse-teal: #1f6f63;
+  --vitals-amber: #d89a3d;
+  --alert-coral: #c4432e;
+  --ayush-sage: #6e8b74;
+  --panel: rgba(255, 255, 255, 0.72);
+  --line: rgba(22, 36, 31, 0.12);
+}
+
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-surface text-gray-900 antialiased;
+    @apply bg-[var(--clinical-mist)] text-[var(--chart-ink)] antialiased;
+    font-family: var(--font-sans), 'Noto Sans', sans-serif;
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.22),
+      rgba(255, 255, 255, 0.06)
+    );
   }
 
   * {
     @apply box-border;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display), Georgia, serif;
+    letter-spacing: -0.03em;
+  }
+
+  a {
+    @apply transition-colors duration-200;
   }
 }
 
@@ -16,5 +51,13 @@
   .kiosk-no-select {
     -webkit-user-select: none;
     user-select: none;
+  }
+
+  .clinical-card {
+    @apply border border-[var(--line)] bg-white/80 shadow-clinical backdrop-blur-sm;
+  }
+
+  .clinical-input {
+    @apply w-full rounded-2xl border border-[var(--line)] bg-white/80 px-4 py-3 text-base text-[var(--chart-ink)] placeholder:text-slate-400 focus:border-[var(--pulse-teal)] focus:outline-none focus:ring-4 focus:ring-[rgba(31,111,99,0.12)];
   }
 }

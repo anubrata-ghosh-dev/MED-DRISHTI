@@ -128,10 +128,10 @@ export default function TriageDashboardPage() {
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-black uppercase ${
                         alert.severity.toLowerCase() === 'critical'
-                          ? 'bg-red-600 text-white'
+                          ? 'bg-[var(--alert-coral)] text-white'
                           : alert.severity.toLowerCase() === 'high'
-                          ? 'bg-amber-500 text-white'
-                          : 'bg-blue-500 text-white'
+                          ? 'bg-[var(--vitals-amber)] text-white'
+                          : 'bg-[var(--pulse-teal)] text-white'
                       }`}
                     >
                       {alert.severity}

@@ -48,13 +48,15 @@ export interface TokenResponse {
 }
 
 export interface PatientResponse {
-  id: string;
-  full_name: string;
-  date_of_birth: string;
-  gender: string;
-  phone: string;
+  id: number;
+  name: string;
+  date_of_birth?: string;
+  gender?: string;
+  phone?: string;
+  preferred_language?: string;
   abha_id?: string;
   created_at: string;
+  updated_at: string;
 }
 
 export interface ConsentResponse {
@@ -91,6 +93,7 @@ export interface NextQuestionResponse {
   question_id: string;
   question_text: string;
   is_final: boolean;
+  done?: boolean;
   options?: string[];
 }
 
@@ -119,19 +122,30 @@ export async function loginUser(
 }
 
 export interface CreatePatientData {
-  full_name: string;
-  date_of_birth: string;
-  gender: string;
-  phone: string;
+  full_name?: string;
+  date_of_birth?: string;
+  gender?: string;
+  phone?: string;
   abha_id?: string;
+  preferred_language?: string;
+  name?: string;
 }
 
 export async function createPatient(
   patientData: CreatePatientData
 ): Promise<PatientResponse> {
+  const payload = {
+    name: patientData.name ?? patientData.full_name ?? 'Patient',
+    date_of_birth: patientData.date_of_birth,
+    gender: patientData.gender,
+    phone: patientData.phone,
+    preferred_language: patientData.preferred_language ?? 'English',
+    abha_id: patientData.abha_id,
+  };
+
   const { data } = await apiClient.post<PatientResponse>(
     '/api/v1/patients',
-    patientData
+    payload
   );
   return data;
 }
@@ -155,10 +169,12 @@ export async function createConsent(
 }
 
 export async function createSession(
-  patientId: string
+  patientId: string | number,
+  sessionType: string = 'intake'
 ): Promise<SessionResponse> {
   const { data } = await apiClient.post<SessionResponse>('/api/v1/sessions', {
     patient_id: patientId,
+    session_type: sessionType,
   });
   return data;
 }
@@ -169,6 +185,23 @@ export async function createHistory(
 ): Promise<HistoryResponse> {
   const { data } = await apiClient.post<HistoryResponse>(
     `/api/v1/sessions/${sessionId}/history`,
+    historyData
+  );
+  return data;
+}
+
+export async function createClinicalHistory(
+  sessionId: number | string,
+  historyData: {
+    chief_complaint?: string;
+    history_of_present_illness?: string;
+    medications?: string;
+    allergies?: string;
+    [key: string]: any;
+  }
+): Promise<any> {
+  const { data } = await apiClient.post(
+    `/api/v1/sessions/${sessionId}/clinical-history`,
     historyData
   );
   return data;
@@ -190,9 +223,10 @@ export async function transcribeVoice(
 }
 
 export async function getNextQuestion(
-  sessionId: string,
+  sessionId: string | number,
   lastAnswer?: string,
-  currentQuestionId?: string
+  currentQuestionId?: string | null,
+  language?: string
 ): Promise<NextQuestionResponse> {
   const { data } = await apiClient.post<NextQuestionResponse>(
     '/api/v1/voice/next-question',
@@ -200,6 +234,7 @@ export async function getNextQuestion(
       session_id: sessionId,
       last_answer: lastAnswer,
       current_question_id: currentQuestionId,
+      language,
     }
   );
   return data;

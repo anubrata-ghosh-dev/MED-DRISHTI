@@ -37,6 +37,12 @@ Deliver an MVP for Med-Drishti that enables patient-facing clinical intake (voic
 - Auth endpoints: login, refresh, logout
 - API: POST `/api/v1/patients`, GET `/api/v1/patients/{id}`, POST `/api/v1/sessions`
 
+### Phase 1A — Registration Flow Repair (current fix)
+- Reconcile frontend payloads with the FastAPI contracts (`name` vs `full_name`, patient/session IDs, bearer-token usage)
+- Allow guest kiosk patient registration without blocking on a pre-existing account when the app is used as a public intake station
+- Support both query-param and JSON-based patient IDs for session creation to keep frontend and backend compatibility stable
+- Validate the end-to-end patient creation + session creation flow before continuing the next UX pass
+
 ### Phase 2 — Frontend Basic UI & Kiosk Mode (2–3 days)
 - Welcome, language selection, registration, consent screens
 - Large buttons, audio prompt placeholders, kiosk cleanup flow

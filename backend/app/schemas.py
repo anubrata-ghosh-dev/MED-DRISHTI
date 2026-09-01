@@ -110,6 +110,7 @@ class ConsentResponse(BaseModel):
 
 # Clinical Session Schemas
 class ClinicalSessionCreate(BaseModel):
+    patient_id: Optional[int] = None
     session_type: str = "intake"
 
 
@@ -277,6 +278,22 @@ class AuditLogResponse(BaseModel):
     resource_id: Optional[int] = None
     timestamp: datetime
     details: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+
+# Clinical Summary Schema
+class ClinicalSummaryResponse(BaseModel):
+    session_id: int
+    patient_id: int
+    chief_complaint: str
+    hpi_summary: str
+    medications: List[str]
+    allergies: List[str]
+    red_flags: List[dict]
+    confidence_score: float
+    generated_at: datetime
 
     class Config:
         orm_mode = True

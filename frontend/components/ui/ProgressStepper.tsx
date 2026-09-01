@@ -14,12 +14,10 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
   return (
     <div className="w-full max-w-2xl mx-auto mb-8 px-4">
       <div className="flex items-center justify-between relative">
-        {/* Background Line */}
         <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-200 -translate-y-1/2 z-0" />
-        
-        {/* Progress Line */}
+
         <div
-          className="absolute top-1/2 left-0 h-1 bg-primary -translate-y-1/2 z-0 transition-all duration-300"
+          className="absolute top-1/2 left-0 h-1 bg-[var(--pulse-teal)] -translate-y-1/2 z-0 transition-all duration-300"
           style={{
             width: `${(currentStep / Math.max(steps.length - 1, 1)) * 100}%`,
           }}
@@ -37,9 +35,9 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
                   isCompleted
-                    ? 'bg-primary text-white ring-4 ring-blue-100'
+                    ? 'bg-[var(--pulse-teal)] text-white ring-4 ring-[rgba(31,111,99,0.18)]'
                     : isCurrent
-                    ? 'bg-white border-2 border-primary text-primary ring-4 ring-blue-100'
+                    ? 'bg-white border-2 border-[var(--pulse-teal)] text-[var(--pulse-teal)] ring-4 ring-[rgba(31,111,99,0.12)]'
                     : 'bg-white border-2 border-slate-300 text-slate-400'
                 }`}
               >

@@ -58,19 +58,19 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       {/* Question Header */}
       <div className="flex flex-col gap-3 text-center">
         <div className="flex items-center justify-center gap-2">
-          <span className="px-3 py-1 bg-blue-50 text-primary font-bold text-xs rounded-full uppercase tracking-wider">
+          <span className="rounded-full bg-[rgba(31,111,99,0.12)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--pulse-teal)]">
             Clinical Intake Question
           </span>
           <button
             type="button"
             onClick={speakQuestionAgain}
-            className="p-2 text-slate-400 hover:text-primary transition-colors text-lg"
+            className="p-2 text-slate-400 transition-colors hover:text-[var(--pulse-teal)] text-lg"
             title="Read question aloud"
           >
             🔊
           </button>
         </div>
-        <h2 className="text-2xl md:text-3xl font-extrabold text-slate-800 leading-snug">
+        <h2 className="text-2xl md:text-3xl font-extrabold text-[var(--chart-ink)] leading-snug">
           {question}
         </h2>
       </div>
@@ -85,7 +85,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           <button
             type="button"
             onClick={() => setIsTyping(true)}
-            className="text-sm font-semibold text-slate-500 hover:text-primary underline underline-offset-4"
+            className="text-sm font-semibold text-slate-500 underline underline-offset-4 transition-colors hover:text-[var(--pulse-teal)]"
           >
             Prefer typing? Click here to type your answer
           </button>
@@ -96,7 +96,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             value={typedAnswer}
             onChange={(e) => setTypedAnswer(e.target.value)}
             placeholder="Type your response here..."
-            className="w-full p-4 border border-slate-300 rounded-2xl text-lg focus:outline-none focus:ring-4 focus:ring-blue-100 min-h-[120px]"
+            className="min-h-[120px] w-full rounded-2xl border border-[var(--line)] bg-slate-50 p-4 text-lg text-[var(--chart-ink)] placeholder:text-slate-400 focus:border-[var(--pulse-teal)] focus:outline-none focus:ring-4 focus:ring-[rgba(31,111,99,0.12)]"
             autoFocus
           />
           <div className="flex gap-3">

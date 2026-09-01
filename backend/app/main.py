@@ -57,6 +57,33 @@ def get_current_user(
     return user
 
 
+def get_current_user_optional(
+    authorization: Optional[str] = Header(None),
+    db: Session = Depends(get_db)
+) -> Optional[models.User]:
+    """Return the authenticated user when a bearer token is supplied; otherwise None."""
+    if not authorization:
+        return None
+
+    try:
+        scheme, token = authorization.split()
+        if scheme.lower() != "bearer":
+            return None
+    except ValueError:
+        return None
+
+    payload = auth.decode_access_token(token)
+    if not payload:
+        return None
+
+    user_id = payload.get("sub")
+    if user_id is None:
+        return None
+
+    user = db.query(models.User).filter(models.User.id == int(user_id)).first()
+    return user
+
+
 # ============ Health Check ============
 @app.get("/api/v1/health")
 def health():
@@ -132,12 +159,12 @@ def logout(current_user: models.User = Depends(get_current_user)):
 @app.post("/api/v1/patients", response_model=schemas.PatientResponse)
 def create_patient(
     payload: schemas.PatientCreate,
-    current_user: models.User = Depends(get_current_user),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
-    """Create a new patient"""
+    """Create a new patient. Allow a kiosk-style guest flow without a pre-existing auth account."""
     patient = models.Patient(
-        user_id=current_user.id if current_user.role == models.RoleEnum.PATIENT else None,
+        user_id=current_user.id if current_user and current_user.role == models.RoleEnum.PATIENT else None,
         name=payload.name,
         date_of_birth=payload.date_of_birth,
         gender=payload.gender,
@@ -154,7 +181,7 @@ def create_patient(
 @app.get("/api/v1/patients/{patient_id}", response_model=schemas.PatientResponse)
 def get_patient(
     patient_id: int,
-    current_user: models.User = Depends(get_current_user),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Get patient by ID"""
@@ -163,7 +190,7 @@ def get_patient(
         raise HTTPException(status_code=404, detail="Patient not found")
     
     # Check authorization: patients can only view their own records
-    if current_user.role == models.RoleEnum.PATIENT and patient.user_id != current_user.id:
+    if current_user and current_user.role == models.RoleEnum.PATIENT and patient.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     
     return patient
@@ -173,7 +200,7 @@ def get_patient(
 def update_patient(
     patient_id: int,
     payload: schemas.PatientUpdate,
-    current_user: models.User = Depends(get_current_user),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Update patient record"""
@@ -182,7 +209,7 @@ def update_patient(
         raise HTTPException(status_code=404, detail="Patient not found")
     
     # Check authorization
-    if current_user.role == models.RoleEnum.PATIENT and patient.user_id != current_user.id:
+    if current_user and current_user.role == models.RoleEnum.PATIENT and patient.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     
     # Update fields
@@ -198,22 +225,26 @@ def update_patient(
 # ============ Clinical Session Endpoints ============
 @app.post("/api/v1/sessions", response_model=schemas.ClinicalSessionResponse)
 def create_session(
-    patient_id: int,
     payload: schemas.ClinicalSessionCreate,
-    current_user: models.User = Depends(get_current_user),
+    patient_id: Optional[int] = None,
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
-    """Create a new clinical session"""
-    patient = db.query(models.Patient).filter(models.Patient.id == patient_id).first()
+    """Create a new clinical session. Support both query-param and JSON-based patient IDs."""
+    session_patient_id = patient_id if patient_id is not None else payload.patient_id
+    if session_patient_id is None:
+        raise HTTPException(status_code=400, detail="patient_id is required")
+
+    patient = db.query(models.Patient).filter(models.Patient.id == session_patient_id).first()
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
     
     # Check authorization
-    if current_user.role == models.RoleEnum.PATIENT and patient.user_id != current_user.id:
+    if current_user and current_user.role == models.RoleEnum.PATIENT and patient.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     
     session = models.ClinicalSession(
-        patient_id=patient_id,
+        patient_id=session_patient_id,
         session_type=payload.session_type
     )
     db.add(session)
@@ -225,7 +256,7 @@ def create_session(
 @app.get("/api/v1/sessions/{session_id}", response_model=schemas.ClinicalSessionResponse)
 def get_session(
     session_id: int,
-    current_user: models.User = Depends(get_current_user),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Get clinical session by ID"""
@@ -234,7 +265,7 @@ def get_session(
         raise HTTPException(status_code=404, detail="Session not found")
     
     # Check authorization
-    if current_user.role == models.RoleEnum.PATIENT and session.patient.user_id != current_user.id:
+    if current_user and current_user.role == models.RoleEnum.PATIENT and session.patient.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     
     return session
@@ -244,7 +275,7 @@ def get_session(
 def update_session(
     session_id: int,
     payload: schemas.ClinicalSessionUpdate,
-    current_user: models.User = Depends(get_current_user),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Update clinical session status"""
@@ -253,7 +284,7 @@ def update_session(
         raise HTTPException(status_code=404, detail="Session not found")
     
     # Check authorization (doctors/nurses can update)
-    if current_user.role == models.RoleEnum.PATIENT:
+    if current_user and current_user.role == models.RoleEnum.PATIENT:
         raise HTTPException(status_code=403, detail="Access denied")
     
     if payload.status:
@@ -271,7 +302,7 @@ def update_session(
 def create_clinical_history(
     session_id: int,
     payload: schemas.ClinicalHistoryCreate,
-    current_user: models.User = Depends(get_current_user),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Create or update clinical history for a session"""
@@ -280,7 +311,7 @@ def create_clinical_history(
         raise HTTPException(status_code=404, detail="Session not found")
     
     # Check authorization
-    if current_user.role == models.RoleEnum.PATIENT and session.patient.user_id != current_user.id:
+    if current_user and current_user.role == models.RoleEnum.PATIENT and session.patient.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     
     history = models.ClinicalHistory(
@@ -317,7 +348,7 @@ def create_clinical_history(
 @app.get("/api/v1/sessions/{session_id}/history", response_model=list[schemas.ClinicalHistoryResponse])
 def get_clinical_histories(
     session_id: int,
-    current_user: models.User = Depends(get_current_user),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Get all clinical histories for a session"""
@@ -326,7 +357,7 @@ def get_clinical_histories(
         raise HTTPException(status_code=404, detail="Session not found")
     
     # Check authorization
-    if current_user.role == models.RoleEnum.PATIENT and session.patient.user_id != current_user.id:
+    if current_user and current_user.role == models.RoleEnum.PATIENT and session.patient.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     
     histories = db.query(models.ClinicalHistory).filter(models.ClinicalHistory.session_id == session_id).all()
@@ -338,7 +369,7 @@ def get_clinical_histories(
 def create_consent(
     patient_id: int,
     payload: schemas.ConsentCreate,
-    current_user: models.User = Depends(get_current_user),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Create a consent record"""
@@ -347,7 +378,7 @@ def create_consent(
         raise HTTPException(status_code=404, detail="Patient not found")
     
     # Check authorization
-    if current_user.role == models.RoleEnum.PATIENT and patient.user_id != current_user.id:
+    if current_user and current_user.role == models.RoleEnum.PATIENT and patient.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     
     consent = models.Consent(
@@ -366,7 +397,7 @@ def create_consent(
 @app.get("/api/v1/patients/{patient_id}/consents", response_model=list[schemas.ConsentResponse])
 def get_consents(
     patient_id: int,
-    current_user: models.User = Depends(get_current_user),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Get all consents for a patient"""
@@ -375,7 +406,7 @@ def get_consents(
         raise HTTPException(status_code=404, detail="Patient not found")
     
     # Check authorization
-    if current_user.role == models.RoleEnum.PATIENT and patient.user_id != current_user.id:
+    if current_user and current_user.role == models.RoleEnum.PATIENT and patient.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     
     consents = db.query(models.Consent).filter(models.Consent.patient_id == patient_id).all()
@@ -396,7 +427,7 @@ _QUESTION_MAP = {q["id"]: q for q in _DIALOGUE_POLICY["questions"]}
 async def transcribe_voice(
     audio: UploadFile = File(...),
     language: str = Form(default="en"),
-    current_user: models.User = Depends(get_current_user),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
 ):
     """Transcribe uploaded audio to text using Whisper."""
     audio_bytes = await audio.read()
@@ -407,7 +438,7 @@ async def transcribe_voice(
 @app.post("/api/v1/voice/next-question", response_model=schemas.NextQuestionResponse)
 def get_next_question(
     payload: schemas.NextQuestionRequest,
-    current_user: models.User = Depends(get_current_user),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db),
 ):
     """Get the next dialogue question for a session."""
@@ -461,7 +492,7 @@ def get_next_question(
 async def upload_document(
     session_id: int = Form(...),
     file: UploadFile = File(...),
-    current_user: models.User = Depends(get_current_user),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Upload a document, perform OCR, and extract medical entities."""
@@ -529,7 +560,7 @@ async def upload_document(
 @app.get("/api/v1/sessions/{session_id}/documents", response_model=list[schemas.DocumentDetailResponse])
 def get_session_documents(
     session_id: int,
-    current_user: models.User = Depends(get_current_user),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Get all uploaded documents & extracted entities for a session."""
@@ -544,7 +575,7 @@ def get_session_documents(
 @app.get("/api/v1/sessions/{session_id}/summary")
 def get_session_summary(
     session_id: int,
-    current_user: models.User = Depends(get_current_user),
+    current_user: Optional[models.User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Generate synthesized clinical summary payload for a session."""

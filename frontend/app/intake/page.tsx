@@ -95,8 +95,8 @@ export default function IntakePage() {
 
         {loading && !currentQuestionId ? (
           <div className="flex flex-col items-center gap-4 py-12">
-            <div className="animate-spin text-5xl text-primary">🏥</div>
-            <p className="text-slate-600 font-semibold">Starting Clinical Intake...</p>
+            <div className="animate-spin text-5xl text-[var(--pulse-teal)]">🏥</div>
+            <p className="font-semibold text-slate-600">Starting Clinical Intake...</p>
           </div>
         ) : (
           <QuestionCard

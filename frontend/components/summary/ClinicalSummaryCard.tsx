@@ -172,7 +172,7 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
               </div>
               <div>
                 <span className="text-xs font-bold text-slate-400 uppercase">Extracted Value</span>
-                <p className="font-semibold text-blue-700">{selectedEntityTrace.value}</p>
+                <p className="font-semibold text-[var(--pulse-teal)]">{selectedEntityTrace.value}</p>
               </div>
               <div>
                 <span className="text-xs font-bold text-slate-400 uppercase">Original OCR Snippet</span>

@@ -21,9 +21,9 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<string>;
   logout: () => void;
   registerUser: (email: string, password: string, fullName: string) => Promise<string>;
-  setPatientId: (id: string) => void;
+  setPatientId: (id: string | number) => void;
   setPatientName: (name: string) => void;
-  setSessionId: (id: string) => void;
+  setSessionId: (id: string | number) => void;
   clearSession: () => void;
 }
 
@@ -89,9 +89,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('md_session_id');
   }, []);
 
-  const setPatientId = useCallback((id: string) => {
-    setPatientIdState(id);
-    localStorage.setItem('md_patient_id', id);
+  const setPatientId = useCallback((id: string | number) => {
+    const normalizedId = String(id);
+    setPatientIdState(normalizedId);
+    localStorage.setItem('md_patient_id', normalizedId);
   }, []);
 
   const setPatientName = useCallback((name: string) => {
@@ -99,9 +100,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('md_patient_name', name);
   }, []);
 
-  const setSessionId = useCallback((id: string) => {
-    setSessionIdState(id);
-    localStorage.setItem('md_session_id', id);
+  const setSessionId = useCallback((id: string | number) => {
+    const normalizedId = String(id);
+    setSessionIdState(normalizedId);
+    localStorage.setItem('md_session_id', normalizedId);
   }, []);
 
   const clearSession = useCallback(() => {

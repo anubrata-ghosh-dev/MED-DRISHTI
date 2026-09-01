@@ -40,8 +40,8 @@ export default function DonePage() {
           </p>
         </div>
 
-        <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl w-full text-sm font-semibold text-slate-600">
-          Screen resets in <span className="text-primary font-bold">{countdown}</span> seconds for next patient.
+        <div className="w-full rounded-2xl border border-[var(--line)] bg-slate-50 p-4 text-sm font-semibold text-slate-600">
+          Screen resets in <span className="font-bold text-[var(--pulse-teal)]">{countdown}</span> seconds for next patient.
         </div>
 
         <BigButton

@@ -107,7 +107,7 @@ export default function DoctorDashboardPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-lg">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-blue-100 text-primary font-extrabold text-xs rounded-full uppercase">
+              <span className="rounded-full bg-[rgba(31,111,99,0.12)] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[var(--pulse-teal)]">
                 Physician Dashboard
               </span>
               <span className="text-xs text-slate-400 font-medium">Dr. Review & Sign-off Workspace</span>
@@ -123,7 +123,7 @@ export default function DoctorDashboardPage() {
               placeholder="Search patient name or ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="px-4 py-2 border border-slate-300 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+              className="w-64 rounded-2xl border border-[var(--line)] bg-slate-50 px-4 py-2 text-sm text-[var(--chart-ink)] focus:outline-none focus:ring-2 focus:ring-[rgba(31,111,99,0.18)]"
             />
             <button
               onClick={fetchQueue}
@@ -170,10 +170,10 @@ export default function DoctorDashboardPage() {
                   <div
                     key={item.session_id}
                     onClick={() => loadSessionDetails(item.session_id)}
-                    className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                    className={`cursor-pointer rounded-2xl border p-4 transition-all ${
                       selectedSessionId === item.session_id
-                        ? 'bg-blue-50/80 border-primary ring-2 ring-blue-200'
-                        : 'bg-white border-slate-200 hover:border-slate-300'
+                        ? 'border-[rgba(31,111,99,0.25)] bg-[rgba(31,111,99,0.06)] ring-2 ring-[rgba(31,111,99,0.12)]'
+                        : 'border-slate-200 bg-white hover:border-slate-300'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
@@ -201,7 +201,7 @@ export default function DoctorDashboardPage() {
                         className={`font-bold capitalize ${
                           item.status === 'completed'
                             ? 'text-emerald-600'
-                            : 'text-blue-600'
+                            : 'text-[var(--pulse-teal)]'
                         }`}
                       >
                         {item.status}
@@ -260,7 +260,7 @@ export default function DoctorDashboardPage() {
                       <textarea
                         value={chiefComplaint}
                         onChange={(e) => setChiefComplaint(e.target.value)}
-                        className="p-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px]"
+                        className="min-h-[80px] rounded-xl border border-[var(--line)] bg-slate-50 p-3 text-sm text-[var(--chart-ink)] focus:outline-none focus:ring-2 focus:ring-[rgba(31,111,99,0.18)]"
                       />
                     </div>
 
@@ -271,7 +271,7 @@ export default function DoctorDashboardPage() {
                       <textarea
                         value={hpi}
                         onChange={(e) => setHpi(e.target.value)}
-                        className="p-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px]"
+                        className="min-h-[80px] rounded-xl border border-[var(--line)] bg-slate-50 p-3 text-sm text-[var(--chart-ink)] focus:outline-none focus:ring-2 focus:ring-[rgba(31,111,99,0.18)]"
                       />
                     </div>
                   </div>
@@ -284,7 +284,7 @@ export default function DoctorDashboardPage() {
                       value={physicianNotes}
                       onChange={(e) => setPhysicianNotes(e.target.value)}
                       placeholder="Add physician notes or diagnosis summary here..."
-                      className="p-4 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                      className="min-h-[100px] rounded-xl border border-[var(--line)] bg-slate-50 p-4 text-sm text-[var(--chart-ink)] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[rgba(31,111,99,0.18)]"
                     />
                   </div>
 

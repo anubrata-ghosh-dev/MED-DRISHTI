@@ -62,7 +62,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
       )}
 
       {/* File Dropzone */}
-      <div className="border-2 border-dashed border-slate-300 hover:border-primary rounded-2xl p-6 text-center flex flex-col items-center gap-3 bg-slate-50 hover:bg-blue-50/50 transition-colors">
+      <div className="rounded-2xl border-2 border-dashed border-[var(--line)] bg-slate-50 p-6 text-center transition-colors hover:border-[var(--pulse-teal)] hover:bg-[rgba(31,111,99,0.04)] flex flex-col items-center gap-3">
         <input
           type="file"
           id="file-upload"
@@ -96,12 +96,12 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
 
       {/* OCR Results Preview */}
       {result && (
-        <div className="p-5 bg-blue-50/50 border border-blue-200 rounded-2xl flex flex-col gap-4 animate-fadeIn">
+        <div className="flex flex-col gap-4 rounded-2xl border border-[rgba(31,111,99,0.18)] bg-[rgba(31,111,99,0.06)] p-5 animate-fadeIn">
           <div className="flex items-center justify-between">
-            <span className="font-extrabold text-sm text-blue-900 uppercase tracking-wider">
+            <span className="text-sm font-extrabold uppercase tracking-[0.14em] text-[var(--pulse-teal)]">
               OCR Entities Extracted ({result.extracted_entities?.length || 0})
             </span>
-            <span className="text-xs bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-full">
+            <span className="rounded-full bg-emerald-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-emerald-700">
               Success
             </span>
           </div>

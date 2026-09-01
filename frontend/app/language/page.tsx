@@ -17,36 +17,41 @@ export default function LanguagePage() {
 
   return (
     <KioskWrapper showLanguageTag={false}>
-      <div className="w-full flex flex-col items-center gap-6">
+      <div className="w-full max-w-4xl">
         <ProgressStepper
           steps={['Language', 'Register', 'Consent', 'Intake']}
           currentStep={0}
         />
 
-        <div className="text-center space-y-2 mb-4">
-          <h2 className="text-3xl font-extrabold text-slate-800">
-            Select Your Language / भाषा चुनें
-          </h2>
-          <p className="text-slate-500 font-medium">
-            Choose the language you prefer for your intake
-          </p>
-        </div>
+        <div className="clinical-card rounded-[2rem] p-6 md:p-8">
+          <div className="mb-6 text-center">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+              Language selection
+            </p>
+            <h2 className="text-3xl text-[var(--chart-ink)] md:text-4xl">
+              Select your language / भाषा चुनें
+            </h2>
+            <p className="mt-2 text-sm text-slate-600 md:text-base">
+              Choose the language you want for your clinical intake experience.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-2xl">
-          {LANGUAGES.map((lang) => (
-            <button
-              key={lang.code}
-              onClick={() => handleSelect(lang.code as Language)}
-              className="p-6 bg-white hover:bg-blue-50 border-2 border-slate-200 hover:border-primary rounded-3xl flex flex-col items-center justify-center gap-2 shadow-md hover:shadow-xl transition-all duration-200 group active:scale-95 text-center min-h-[120px]"
-            >
-              <span className="text-2xl font-black text-slate-900 group-hover:text-primary transition-colors">
-                {lang.nativeName}
-              </span>
-              <span className="text-xs font-semibold text-slate-400 group-hover:text-blue-600">
-                {lang.name}
-              </span>
-            </button>
-          ))}
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+            {LANGUAGES.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => handleSelect(lang.code as Language)}
+                className="group min-h-[126px] rounded-[1.5rem] border border-[var(--line)] bg-white/80 p-5 text-center shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--pulse-teal)] hover:bg-[rgba(31,111,99,0.04)] hover:shadow-lg active:scale-[0.99]"
+              >
+                <span className="block text-2xl font-black text-[var(--chart-ink)] transition-colors group-hover:text-[var(--pulse-teal)] md:text-3xl">
+                  {lang.nativeName}
+                </span>
+                <span className="mt-2 block text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 group-hover:text-[var(--pulse-teal)]">
+                  {lang.name}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </KioskWrapper>
