@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { KioskWrapper } from '@/components/layout/KioskWrapper';
 import { ProgressStepper } from '@/components/ui/ProgressStepper';
@@ -17,6 +17,8 @@ export default function IntakePage() {
   const [currentQuestionId, setCurrentQuestionId] = useState<string | null>(null);
   const [questionText, setQuestionText] = useState<string>('Loading question...');
   const [collectedAnswers, setCollectedAnswers] = useState<Record<string, string>>({});
+  const collectedAnswersRef = useRef<Record<string, string>>({});
+  const [questionField, setQuestionField] = useState<string | undefined>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAyush, setIsAyush] = useState(false);
@@ -51,13 +53,14 @@ export default function IntakePage() {
 
       if (res.done) {
         // Dialogue flow complete! Save ClinicalHistory
-        await saveHistory();
+        await saveHistory(collectedAnswersRef.current);
         router.push('/medical-history');
         return;
       }
 
       setCurrentQuestionId(res.question_id);
       setQuestionText(res.question_text || 'Please answer the question.');
+      setQuestionField(res.field || undefined);
     } catch (err: any) {
       console.error('Error fetching next question:', err);
       // Fallback first question if backend dialogue engine offline
@@ -79,25 +82,27 @@ export default function IntakePage() {
   const handleAnswer = async (answerText: string) => {
     if (currentQuestionId) {
       const updated = { ...collectedAnswers, [currentQuestionId]: answerText };
+      collectedAnswersRef.current = updated;
       setCollectedAnswers(updated);
       await fetchQuestion(answerText, currentQuestionId);
     }
   };
 
-  const saveHistory = async () => {
+  const saveHistory = async (answers: Record<string, string>) => {
     const activeSessionId = sessionId || 1;
     try {
       await createClinicalHistory(activeSessionId, {
-        chief_complaint: collectedAnswers['chief_complaint'] || 'Not provided',
-        history_of_present_illness: `Duration: ${collectedAnswers['duration'] || 'N/A'}; Severity: ${collectedAnswers['severity'] || 'N/A'}; Location: ${collectedAnswers['location'] || 'N/A'}`,
-        medications: collectedAnswers['medications'] || 'None reported',
-        allergies: collectedAnswers['allergies'] || 'None reported',
+        chief_complaints: answers['chief_complaint'] ? [{ complaint: answers['chief_complaint'] }] : [],
+        hpi: [{
+          duration: answers['cc_duration'] || undefined,
+          associated_symptoms: Object.entries(answers).find(([id]) => id.startsWith('targeted_'))?.[1],
+        }],
       });
 
       if (isAyush) {
         try {
           const { createAyushHistory } = await import('@/lib/api');
-          await createAyushHistory(activeSessionId, collectedAnswers);
+          await createAyushHistory(activeSessionId, answers);
         } catch (ayushErr) {
           console.warn('AYUSH history could not be saved:', ayushErr);
         }
@@ -131,6 +136,7 @@ export default function IntakePage() {
           <QuestionCard
             question={questionText}
             questionId={currentQuestionId || 'chief_complaint'}
+            field={questionField}
             onAnswer={handleAnswer}
             language={language}
           />

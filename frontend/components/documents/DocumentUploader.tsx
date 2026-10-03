@@ -38,7 +38,12 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
       if (onUploadSuccess) onUploadSuccess(data);
     } catch (err: any) {
       console.error('Upload error:', err);
-      setError(err.response?.data?.detail || 'Failed to upload and process document.');
+      setError(
+        err.response?.data?.detail ||
+          err.response?.data?.error?.message ||
+          err.message ||
+          'Failed to upload and process document.'
+      );
     } finally {
       setUploading(false);
     }
@@ -102,11 +107,11 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
               OCR Entities Extracted ({result.extracted_entities?.length || 0})
             </span>
             <span className="rounded-full bg-emerald-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-emerald-700">
-              Success
+              {result.ocr_text?.trim() ? 'Text detected' : 'No text found'}
             </span>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          {result.extracted_entities?.length ? <div className="flex flex-wrap gap-2">
             {result.extracted_entities?.map((ent: any) => (
               <div
                 key={ent.id}
@@ -123,7 +128,13 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
                 <span className="text-[10px] opacity-60">({Math.round(ent.confidence * 100)}%)</span>
               </div>
             ))}
-          </div>
+          </div> : <p className="text-sm text-slate-600">Text was read, but no supported medicine, lab, date, or diagnosis fields were recognized.</p>}
+          {result.ocr_text?.trim() && (
+            <details className="rounded-xl border border-slate-200 bg-white p-3">
+              <summary className="cursor-pointer text-sm font-bold text-slate-700">Review detected text</summary>
+              <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap text-xs text-slate-600">{result.ocr_text}</pre>
+            </details>
+          )}
         </div>
       )}
     </div>

@@ -91,6 +91,7 @@ export interface TranscribeResponse {
 export interface NextQuestionResponse {
   question_id: string;
   question_text: string;
+  field?: string | null;
   is_final: boolean;
   done?: boolean;
   options?: string[];
@@ -202,7 +203,7 @@ export async function createClinicalHistory(
   }
 ): Promise<any> {
   const { data } = await apiClient.post(
-    `/api/v1/sessions/${sessionId}/clinical-history`,
+    `/api/v1/sessions/${sessionId}/history`,
     historyData
   );
   return data;

@@ -43,6 +43,35 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
         </div>
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <h3 className="font-bold text-slate-800">Known medical history</h3>
+          {subjective?.past_medical_history?.length ? subjective.past_medical_history.map((item: any, index: number) => (
+            <p key={index} className="mt-1 text-slate-700">{item.condition}{item.status ? ` · ${item.status}` : ''}{item.diagnosed ? ` · since ${item.diagnosed}` : ''}</p>
+          )) : <p className="mt-1 text-slate-500">No prior conditions recorded.</p>}
+          {subjective?.past_surgical_history?.map((item: any, index: number) => (
+            <p key={`surgery-${index}`} className="mt-1 text-slate-700">Surgery: {item.procedure}{item.date ? ` · ${item.date}` : ''}</p>
+          ))}
+          {subjective?.previous_visit_complaints?.map((complaint: string, index: number) => (
+            <p key={`visit-${index}`} className="mt-1 text-slate-700">Previous visit: {complaint}</p>
+          ))}
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <h3 className="font-bold text-slate-800">Medicines and allergies</h3>
+          <p className="mt-1 text-slate-700">Reported medicines: {subjective?.patient_reported_medications || 'Not recorded'}</p>
+          <p className="mt-1 text-slate-700">Reported allergies: {subjective?.patient_reported_allergies || 'Not recorded'}</p>
+        </div>
+        {(subjective?.family_history?.length > 0 || subjective?.personal_history?.length > 0 || subjective?.review_of_systems?.length > 0 || subjective?.ayush_history?.length > 0) && (
+          <div className="sm:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <h3 className="font-bold text-slate-800">Family and personal history</h3>
+            {subjective.family_history?.map((item: any, index: number) => <p key={`family-${index}`} className="mt-1 text-slate-700">Family: {item.condition} ({item.relationship}){item.relevance ? ` · ${item.relevance}` : ''}</p>)}
+            {subjective.personal_history?.map((item: any, index: number) => <p key={`personal-${index}`} className="mt-1 text-slate-700">{item.category}: {item.value || item.detail || 'Recorded'}</p>)}
+            {subjective.review_of_systems?.map((item: any, index: number) => <p key={`ros-${index}`} className="mt-1 text-slate-700">{item.system}: {item.finding || item.detail || 'Recorded'}</p>)}
+            {subjective.ayush_history?.map((item: any, index: number) => <p key={`ayush-${index}`} className="mt-1 text-slate-700">{item.parameter}: {item.value || item.detail || 'Recorded'}</p>)}
+          </div>
+        )}
+      </div>
+
       {/* Subjective History */}
       <div className="flex flex-col gap-3">
         <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -63,6 +92,30 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
           </div>
         </div>
       </div>
+
+      {objective?.connections_for_review?.length > 0 && (
+        <section className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+          <h3 className="text-base font-extrabold text-blue-950">Related information to review</h3>
+          <p className="mt-1 text-xs text-blue-800">These links connect recorded history to uploaded results; they are prompts for clinical review, not diagnoses.</p>
+          {objective.connections_for_review.map((connection: any, index: number) => (
+            <div key={index} className="mt-3 rounded-xl bg-white p-3 text-sm text-slate-700">
+              <p className="font-bold text-slate-900">{connection.title}</p>
+              <p className="mt-1">{connection.detail}</p>
+              <p className="mt-1 text-xs text-slate-500">Sources: {connection.sources?.join(', ')}</p>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {objective?.document_diagnoses?.length > 0 && (
+        <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <h3 className="text-base font-extrabold text-slate-900">Diagnoses written in uploaded records</h3>
+          <p className="mt-1 text-xs text-slate-500">OCR text from source documents; verify against the original record.</p>
+          {objective.document_diagnoses.map((item: any, index: number) => (
+            <p key={index} className="mt-2 text-sm text-slate-700"><strong>{item.value}</strong> · {item.document_name} · {Math.round((item.confidence || 0) * 100)}% extraction confidence</p>
+          ))}
+        </section>
+      )}
 
       {/* Objective & Extracted Entities (with Confidence & Traceability) */}
       <div className="flex flex-col gap-3">

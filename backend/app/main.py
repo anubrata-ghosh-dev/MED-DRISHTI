@@ -584,20 +584,41 @@ async def upload_document(
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    # 1. Document Quality Check
     file_bytes = await file.read()
-    temp_path = f"/tmp/{uuid.uuid4().hex}_{file.filename}"
-    with open(temp_path, "wb") as f:
-        f.write(file_bytes)
+    if not file_bytes:
+        raise HTTPException(status_code=400, detail="Uploaded document is empty")
 
-    quality = ocr_module.check_image_quality(temp_path)
-    if not quality["is_viable"]:
-        os.remove(temp_path)
-        raise HTTPException(status_code=400, detail=f"Document quality too low: {quality['reason']}")
+    temp_path = f"/tmp/{uuid.uuid4().hex}_{os.path.basename(file.filename or 'document')}"
+    try:
+        with open(temp_path, "wb") as f:
+            f.write(file_bytes)
 
-    # 2. OCR Extraction via Gateway
-    raw_ocr_text = gateway.extract_text(temp_path)
-    os.remove(temp_path)
+        # Quality checks apply to images. PDFs are validated during conversion
+        # by the OCR provider because PIL cannot reliably inspect PDF files.
+        if not (file.content_type == "application/pdf" or temp_path.lower().endswith(".pdf")):
+            quality = ocr_module.check_image_quality(temp_path)
+            if not quality["is_viable"]:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Document quality too low: {quality['reason']}",
+                )
+
+        # OCR extraction via the configured provider chain.
+        try:
+            raw_ocr_text = gateway.extract_text(temp_path)
+        except RuntimeError as exc:
+            raise HTTPException(
+                status_code=503,
+                detail="Document OCR is unavailable. Install/configure Tesseract or Google Vision.",
+            ) from exc
+        if not raw_ocr_text or not raw_ocr_text.strip() or raw_ocr_text.strip() == "[Mock OCR Text]":
+            raise HTTPException(
+                status_code=422,
+                detail="No readable text was found. Use a clear, well-lit image or a searchable PDF and try again.",
+            )
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
 
     doc_record = models.Document(
         session_id=session_id,
@@ -796,16 +817,93 @@ def get_session_summary(
     medication_records = session.medication_histories
     allergy_records = session.allergy_histories
 
-    if chief_complaints or hpi_records:
+    if (chief_complaints or hpi_records or medication_records or allergy_records or
+            session.past_medical_histories or session.past_surgical_histories or
+            session.family_histories or session.personal_histories or session.review_of_systems or session.ayush_histories):
         history_dict = {
             "chief_complaint": "; ".join([cc.complaint for cc in chief_complaints]) if chief_complaints else "No chief complaint recorded",
             "history_of_present_illness": "; ".join(filter(None, [
-                " ".join(filter(None, [h.onset, h.duration, h.progression, h.location, h.associated_symptoms]))
+                " ".join(filter(None, [h.onset, h.duration, h.progression, h.location, h.character, h.radiation, h.aggravating_factors, h.relieving_factors, h.associated_symptoms]))
                 for h in hpi_records
             ])) if hpi_records else "No present illness history recorded",
-            "medications": ", ".join([f"{m.drug_name} {m.dose or ''}" for m in medication_records]) if medication_records else None,
-            "allergies": ", ".join([a.allergen for a in allergy_records]) if allergy_records else None,
+            "medications": ", ".join([
+                "; ".join(filter(None, [m.drug_name, m.dose, m.frequency, m.route, m.duration, m.status]))
+                for m in medication_records
+            ]) if medication_records else None,
+            "allergies": ", ".join([
+                "; ".join(filter(None, [a.allergen, a.reaction, a.type]))
+                for a in allergy_records
+            ]) if allergy_records else None,
+            "past_medical_history": [
+                {"condition": item.condition, "diagnosed": item.date_of_diagnosis, "status": item.status}
+                for item in session.past_medical_histories
+            ],
+            "past_surgical_history": [
+                {"procedure": item.procedure, "date": item.date, "hospital": item.hospital, "indication": item.indication, "outcome": item.outcome}
+                for item in session.past_surgical_histories
+            ],
+            "family_history": [
+                {"condition": item.condition, "relationship": item.relationship, "relevance": item.relevance}
+                for item in session.family_histories
+            ],
+            "personal_history": [
+                {"category": item.category, "value": item.value, "detail": item.detail}
+                for item in session.personal_histories
+            ],
+            "review_of_systems": [
+                {"system": item.system, "finding": item.finding, "detail": item.detail}
+                for item in session.review_of_systems
+            ],
+            "ayush_history": [
+                {"parameter": item.parameter, "value": item.value, "detail": item.detail}
+                for item in session.ayush_histories
+            ],
         }
+
+    # Carry forward prior patient-entered history so the clinician sees context
+    # already collected and future intakes do not need to re-ask routine items.
+    prior_sessions = [item for item in session.patient.sessions if item.id != session.id]
+    prior_conditions = [
+        {"condition": item.condition, "diagnosed": item.date_of_diagnosis, "status": item.status}
+        for prior in prior_sessions for item in prior.past_medical_histories
+    ]
+    prior_surgeries = [
+        {"procedure": item.procedure, "date": item.date, "indication": item.indication, "outcome": item.outcome}
+        for prior in prior_sessions for item in prior.past_surgical_histories
+    ]
+    prior_meds = [
+        "; ".join(filter(None, [item.drug_name, item.dose, item.frequency, item.route, item.duration, item.status]))
+        for prior in prior_sessions for item in prior.medication_histories
+    ]
+    prior_allergies = [item.allergen for prior in prior_sessions for item in prior.allergy_histories]
+    prior_family = [
+        {"condition": item.condition, "relationship": item.relationship, "relevance": item.relevance}
+        for prior in prior_sessions for item in prior.family_histories
+    ]
+    prior_personal = [
+        {"category": item.category, "value": item.value, "detail": item.detail}
+        for prior in prior_sessions for item in prior.personal_histories
+    ]
+    prior_ros = [
+        {"system": item.system, "finding": item.finding, "detail": item.detail}
+        for prior in prior_sessions for item in prior.review_of_systems
+    ]
+    if any((prior_conditions, prior_surgeries, prior_meds, prior_allergies, prior_family, prior_personal, prior_ros)):
+        history_dict = history_dict or {}
+        history_dict["past_medical_history"] = prior_conditions + history_dict.get("past_medical_history", [])
+        history_dict["past_surgical_history"] = prior_surgeries + history_dict.get("past_surgical_history", [])
+        history_dict["medications"] = ", ".join(dict.fromkeys(filter(None, [history_dict.get("medications"), *prior_meds]))) or None
+        history_dict["allergies"] = ", ".join(dict.fromkeys(filter(None, [history_dict.get("allergies"), *prior_allergies]))) or None
+        history_dict["family_history"] = prior_family + history_dict.get("family_history", [])
+        history_dict["personal_history"] = prior_personal + history_dict.get("personal_history", [])
+        history_dict["review_of_systems"] = prior_ros + history_dict.get("review_of_systems", [])
+    if prior_sessions:
+        history_dict = history_dict or {}
+        history_dict["previous_visit_complaints"] = [
+            complaint.complaint
+            for prior in prior_sessions
+            for complaint in prior.chief_complaints
+        ]
 
     docs_list = []
     for doc in session.documents:
@@ -825,6 +923,15 @@ def get_session_summary(
             ]
         }
         docs_list.append(doc_dict)
+
+    for record in session.patient.medical_records:
+        if record.ocr_text:
+            docs_list.append({
+                "id": f"medical-record-{record.id}",
+                "file_name": record.title or record.file_name or "Patient medical record",
+                "ocr_text": record.ocr_text,
+                "extracted_entities": ocr_module.extract_entities_from_text(record.ocr_text),
+            })
 
     red_flags_list = [
         {

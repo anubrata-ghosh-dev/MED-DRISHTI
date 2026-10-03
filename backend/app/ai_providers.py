@@ -229,10 +229,11 @@ class MockAIProvider(AIProvider):
         return f"[Mock Translated {target_lang}]: {text}"
 
     def extract_text(self, file_path: str) -> Optional[str]:
-        return "[Mock OCR Text]"
+        # Never claim that an uploaded clinical document was read in mock mode.
+        return None
 
     def extract_entities(self, text: str) -> Optional[List[Dict[str, Any]]]:
-        return [{"entity_type": "medication", "entity_value": "MockMed 10mg", "confidence": 0.5, "source_text": "MockMed 10mg"}]
+        return None
 
     def summarize(self, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         return {"summary": "This is a mock summary of the clinical case.", "confidence": 0.1}

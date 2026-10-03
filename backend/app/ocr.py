@@ -224,7 +224,9 @@ def extract_ocr_text(file_path: str) -> Dict[str, Any]:
                 "pages": len(pages),
             }
         else:
-            return _get_mock_text(file_path)
+            if os.getenv("OCR_DEMO_MODE", "").lower() == "true":
+                return _get_mock_text(file_path)
+            return {"text": "", "confidence": 0.0, "is_handwritten": False, "method": "none", "pages": 0}
 
     # Handle images
     return _extract_from_image(file_path)
