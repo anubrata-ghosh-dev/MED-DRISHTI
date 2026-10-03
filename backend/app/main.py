@@ -152,7 +152,7 @@ def require_role(allowed_roles: List[models.RoleEnum]):
         return current_user
     return role_checker
 
-@app.get("/api/v1/health")
+@app.api_route("/api/v1/health", methods=["GET", "HEAD"])
 def health():
     return {"status": "ok", "time": datetime.utcnow().isoformat()}
 
