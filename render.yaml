@@ -4,6 +4,7 @@ services:
     runtime: python
     rootDir: backend
     buildCommand: pip install -r requirements.txt
+    preDeployCommand: alembic upgrade head && python -m app.seed_kiosk
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/v1/health
     envVars:
@@ -27,6 +28,12 @@ services:
         sync: false
       - key: OCR_DEMO_MODE
         value: "false"
+      - key: TESSERACT_PATH
+        value: /usr/bin/tesseract
+      - key: KIOSK_EMAIL
+        value: kiosk@meddrishti.in
+      - key: KIOSK_PASSWORD
+        sync: false
 
 databases:
   - name: med-drishti-db
