@@ -156,11 +156,11 @@ You are the patient's knowledgeable, trusted health companion at this kiosk.
 def get_chat_response(messages: list, language: str = "en") -> dict:
     """
     Get a chat response from Sarvam AI for the patient chatbot.
-    
+
     Args:
         messages: List of message dicts with 'role' and 'content' keys
         language: Language code (en, hi, bn, ta, te, ml, pa, etc.)
-    
+
     Returns:
         dict with 'reply' (string) and 'language' (string)
     """
@@ -199,7 +199,11 @@ def get_chat_response(messages: list, language: str = "en") -> dict:
 
         response = client.chat.completions(
             model="sarvam-105b",
-            messages=full_messages
+            messages=full_messages,
+            # Patient-facing kiosk replies should be prompt and concise; avoid
+            # spending response tokens on hidden reasoning by default.
+            reasoning_effort=None,
+            max_tokens=500,
         )
 
         reply_text = response.choices[0].message.content

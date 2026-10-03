@@ -40,7 +40,6 @@ Med-Drishti/
 ├── docs/             # Documentation
 ├── docker-compose.yml
 ├── .env.example
-├── MED-DRISHTI_IMPLEMENTATION_PLAN.md
 ├── ARCHITECTURE.md
 └── PRD.md
 ```
@@ -48,7 +47,6 @@ Med-Drishti/
 ## Documentation
 - [PRD](./PRD.md) — Product Requirements Document
 - [Architecture](./ARCHITECTURE.md) — System design and tech stack
-- [Implementation Plan](./MED-DRISHTI_IMPLEMENTATION_PLAN.md) — Phased roadmap
 - [Backend README](./backend/README.md) — Backend setup
 - [Frontend README](./frontend/README.md) — Frontend setup
 

@@ -209,7 +209,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             Heard Response:
           </div>
           <p className="text-lg font-medium text-slate-800 bg-slate-50 p-4 rounded-xl border border-slate-100 italic">
-            "{transcriptionText}"
+            &quot;{transcriptionText}&quot;
           </p>
           <div className="flex gap-3">
             <BigButton

@@ -57,12 +57,17 @@ export function speakText(text: string, language: string = 'en', force: boolean 
 
   const targetBcp = bcpMap[language] || 'en-IN';
 
-  // 1. Web Speech API with BCP-47 locale matching (100% native in modern browsers)
+  // Sarvam Bulbul is the primary voice for consistent Indian-language playback.
+  // The browser voice remains a resilient offline fallback.
+  playBackendAudioStream(cleanText, language, () => speakWithBrowser(cleanText, language, targetBcp));
+}
+
+function speakWithBrowser(text: string, language: string, targetBcp: string) {
   if ('speechSynthesis' in window) {
     try {
-      window.speechSynthesis.cancel(); // clear previous queue
+      window.speechSynthesis.cancel();
 
-      const utterance = new SpeechSynthesisUtterance(cleanText);
+      const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = targetBcp;
       utterance.rate = 0.95; // Slightly slower for clear medical intake comprehension
       utterance.pitch = 1.0;
@@ -82,17 +87,21 @@ export function speakText(text: string, language: string = 'en', force: boolean 
       }
 
       window.speechSynthesis.speak(utterance);
-      return;
     } catch (e) {
       console.warn('[SpeechEngine] Web Speech API error:', e);
     }
   }
-
-  // 2. Audio Stream fallback
-  playBackendAudioStream(cleanText, language);
 }
 
-function playBackendAudioStream(text: string, language: string) {
+function playBackendAudioStream(text: string, language: string, onError: () => void) {
+  let fallbackUsed = false;
+  const triggerFallback = () => {
+    if (!fallbackUsed) {
+      fallbackUsed = true;
+      onError();
+    }
+  };
+
   try {
     const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
     const audioUrl = `${API_BASE}/api/v1/voice/tts?text=${encodeURIComponent(text)}&lang=${language}`;
@@ -106,6 +115,7 @@ function playBackendAudioStream(text: string, language: string) {
 
     audio.onerror = () => {
       currentAudio = null;
+      triggerFallback();
     };
 
     const playPromise = audio.play();
@@ -113,9 +123,11 @@ function playBackendAudioStream(text: string, language: string) {
       playPromise.catch((err) => {
         console.warn('[SpeechEngine] Audio playback error:', err);
         currentAudio = null;
+        triggerFallback();
       });
     }
   } catch (err) {
     console.warn('[SpeechEngine] Audio exception:', err);
+    triggerFallback();
   }
 }

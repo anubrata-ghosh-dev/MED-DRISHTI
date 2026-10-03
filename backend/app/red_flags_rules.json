@@ -1,37 +1,122 @@
 [
   {
-    "rule_id": "RF001",
-    "name": "Severe Chest Pain",
-    "keywords": ["chest pain", "angina", "tightness in chest", "chest pressure", "radiation to arm", "radiation to jaw"],
+    "rule_id": "RF_CARDIAC_URGENT",
+    "name": "Urgent Cardiac Pattern",
+    "description": "Combination of chest pain, breathlessness, and sweating suggests potential cardiac emergency.",
     "severity": "critical",
-    "description": "Patient reported severe chest pain or possible acute coronary syndrome."
+    "match_mode": "ANY",
+    "keywords": ["chest pain", "breathlessness", "sweating", "shortness of breath", "tightness in chest", "radiating pain", "jaw pain with exertion"]
   },
   {
-    "rule_id": "RF002",
-    "name": "High Fever / Severe Infection",
-    "keywords": ["high fever", "102", "103", "104", "chills", "stiff neck", "hyperpyrexia"],
+    "rule_id": "RF_STROKE_URGENT",
+    "name": "Urgent Stroke Pattern",
+    "description": "Facial weakness, speech difficulty, or sudden arm weakness suggests potential stroke.",
+    "severity": "critical",
+    "match_mode": "ANY",
+    "keywords": ["facial weakness", "slurred speech", "speech difficulty", "arm weakness", "numbness on one side", "facial droop", "sudden confusion"]
+  },
+  {
+    "rule_id": "RF_RESPIRATORY_HIGH",
+    "name": "Severe Respiratory Distress",
+    "description": "Severe difficulty in breathing or cyanosis.",
     "severity": "high",
-    "description": "Signs of severe high fever or possible systemic infection."
+    "match_mode": "ANY",
+    "keywords": ["cannot breathe", "severe wheezing", "cyanosis", "gasping", "blue lips", "choking"]
   },
   {
-    "rule_id": "RF003",
-    "name": "Hypertensive Crisis",
-    "keywords": ["bp > 180", "180/110", "190/", "200/", "hypertension crisis"],
+    "rule_id": "RF_ALLERGY_ANAPHYLAXIS",
+    "name": "Anaphylaxis Risk",
+    "description": "Signs of severe allergic reaction.",
     "severity": "critical",
-    "description": "Severely elevated blood pressure recorded in history or document vitals."
+    "match_mode": "ANY",
+    "keywords": ["throat swelling", "anaphylaxis", "severe rash", "difficulty swallowing", "tongue swelling", "hives all over"]
   },
   {
-    "rule_id": "RF004",
-    "name": "Shortness of Breath / Hypoxia",
-    "keywords": ["shortness of breath", "breathless", "spo2 < 90", "difficulty breathing", "wheezing", "gasping"],
+    "rule_id": "RF_DIABETIC_EMERGENCY",
+    "name": "Diabetic Emergency",
+    "description": "Signs of diabetic ketoacidosis or severe hypoglycemia.",
     "severity": "critical",
-    "description": "Respiratory distress or low oxygen saturation."
+    "match_mode": "ANY",
+    "keywords": ["fruity breath", "ketoacidosis", "sugar very high", "sugar very low", "diabetic coma", "unconscious diabetic", "glucose above 400"]
   },
   {
-    "rule_id": "RF005",
-    "name": "Severe Allergic Reaction",
-    "keywords": ["anaphylaxis", "swallowing difficulty", "swollen lips", "hives all over"],
+    "rule_id": "RF_SEIZURE",
+    "name": "Active Seizure / Status Epilepticus",
+    "description": "Ongoing or repeated seizure activity.",
+    "severity": "critical",
+    "match_mode": "ANY",
+    "keywords": ["seizure", "convulsion", "fitting", "epileptic episode", "status epilepticus", "uncontrolled shaking"]
+  },
+  {
+    "rule_id": "RF_HYPERTENSIVE_CRISIS",
+    "name": "Severe Hypertension / Hypertensive Crisis",
+    "description": "Dangerously elevated blood pressure with end-organ symptoms.",
     "severity": "high",
-    "description": "Signs of acute allergic reaction or airway compromise."
+    "match_mode": "ANY",
+    "keywords": ["bp very high", "severe headache with high bp", "hypertensive crisis", "blurred vision with headache", "blood pressure 200"]
+  },
+  {
+    "rule_id": "RF_ACUTE_ABDOMEN",
+    "name": "Acute Abdomen",
+    "description": "Signs of acute abdominal emergency (appendicitis, perforation, obstruction).",
+    "severity": "high",
+    "match_mode": "ANY",
+    "keywords": ["rigid abdomen", "severe abdominal pain", "vomiting blood", "blood in stool", "abdominal guarding", "rebound tenderness"]
+  },
+  {
+    "rule_id": "RF_SEPSIS",
+    "name": "Sepsis Indicators",
+    "description": "Signs suggesting systemic infection and sepsis.",
+    "severity": "critical",
+    "match_mode": "ANY",
+    "keywords": ["high fever with confusion", "sepsis", "septic shock", "fever with low bp", "chills with rapid heart rate"]
+  },
+  {
+    "rule_id": "RF_TRAUMA",
+    "name": "Significant Trauma",
+    "description": "Major traumatic injury requiring urgent attention.",
+    "severity": "high",
+    "match_mode": "ANY",
+    "keywords": ["head injury", "major bleeding", "fracture", "road accident", "fall from height", "penetrating wound"]
+  },
+  {
+    "rule_id": "RF_SUICIDAL",
+    "name": "Suicidal Ideation",
+    "description": "Patient expressing self-harm or suicidal thoughts.",
+    "severity": "critical",
+    "match_mode": "ANY",
+    "keywords": ["want to die", "suicidal", "self harm", "end my life", "kill myself", "no reason to live"]
+  },
+  {
+    "rule_id": "RF_OBSTETRIC",
+    "name": "Obstetric Emergency",
+    "description": "Signs of pregnancy-related emergency.",
+    "severity": "critical",
+    "match_mode": "ANY",
+    "keywords": ["heavy vaginal bleeding", "pregnant and bleeding", "eclampsia", "severe preeclampsia", "cord prolapse", "placental abruption"]
+  },
+  {
+    "rule_id": "RF_BURNS",
+    "name": "Severe Burns",
+    "description": "Extensive or critical burn injuries.",
+    "severity": "high",
+    "match_mode": "ANY",
+    "keywords": ["severe burns", "chemical burn", "electrical burn", "burns over large area", "inhalation injury"]
+  },
+  {
+    "rule_id": "RF_OVERDOSE",
+    "name": "Drug Overdose / Poisoning",
+    "description": "Signs of drug overdose or poisoning.",
+    "severity": "critical",
+    "match_mode": "ANY",
+    "keywords": ["overdose", "poisoning", "swallowed poison", "drug overdose", "organophosphate", "snake bite", "insecticide"]
+  },
+  {
+    "rule_id": "RF_PEDIATRIC_DISTRESS",
+    "name": "Pediatric Distress",
+    "description": "Signs of serious illness in a child.",
+    "severity": "high",
+    "match_mode": "ANY",
+    "keywords": ["child not breathing", "infant limp", "child convulsing", "child unresponsive", "severe dehydration child", "fontanelle sunken"]
   }
 ]

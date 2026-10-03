@@ -1,13 +1,13 @@
 # PRD — Med-Drishti
 ## AI-Powered Patient Case-Taking & Clinical Intake Platform
 
-> **Smart India Hackathon 2026 — SIH26047**  
-> **Problem Statement:** Patient Case-Taking Software  
-> **Ministry / Organization:** Ministry of Ayush  
-> **Department:** All India Institute of Ayurveda  
-> **Product:** Med-Drishti  
-> **Document Version:** 1.0.0  
-> **Status:** Product Requirements Specification  
+> **Smart India Hackathon 2026 — SIH26047**
+> **Problem Statement:** Patient Case-Taking Software
+> **Ministry / Organization:** Ministry of Ayush
+> **Department:** All India Institute of Ayurveda
+> **Product:** Med-Drishti
+> **Document Version:** 1.1.0
+> **Status:** Product Requirements Specification
 > **Target:** SIH 2026 Software Track
 
 ---
@@ -127,7 +127,7 @@ These documents are often:
 
 AYUSH institutions have an additional challenge because Ayurvedic clinical assessment requires specialized parameters such as Dashavidha Pariksha.
 
-The SIH problem statement therefore calls for a patient-facing platform capable of collecting structured clinical history and digitizing existing medical documents before the patient reaches the physician. 
+The SIH problem statement therefore calls for a patient-facing platform capable of collecting structured clinical history and digitizing existing medical documents before the patient reaches the physician.
 
 ---
 
@@ -195,7 +195,7 @@ AI-generated information must remain reviewable and editable by a clinician.
 
 ### G10 — Prepare for healthcare interoperability
 
-Design the internal data model to support FHIR/ABDM integration.
+Design the internal clinical model so it can be mapped to valid FHIR resources and exposed through a dedicated interoperability layer. The MVP should implement and validate the FHIR mapping/bundle generation path. Actual ABDM exchange must be treated as a separate adapter/integration step that depends on the required sandbox access, credentials, institutional onboarding, and external API availability.
 
 ---
 
@@ -410,7 +410,7 @@ Doctor Review
 Final Clinical Intake Record
           │
           ▼
-FHIR / HIS / ABDM Integration
+FHIR Mapping / HIS / ABDM Adapter
 ```
 
 ---
@@ -537,7 +537,17 @@ The interview engine must use structured clinical schemas.
 
 # FR-05 — Adaptive Questioning
 
-Questions should change according to previous answers.
+Questions shall change according to the patient's previous answers, but the interview engine must remain **schema-driven and state-driven rather than LLM-driven**.
+
+The adaptive questioning engine shall:
+
+1. Identify the chief complaint or active clinical workflow.
+2. Load the relevant clinical ontology/schema and mandatory information fields.
+3. Maintain a structured patient state containing answered, unanswered, uncertain, and not-applicable fields.
+4. Apply predefined question policies to select the next clinically relevant field.
+5. Avoid questions that are already answered, explicitly denied, not applicable, or irrelevant to the current branch.
+6. Ask confirmation questions when an answer is ambiguous or confidence is low.
+7. Allow the LLM to generate natural-language wording and multilingual phrasing, but **not to independently choose safety-critical questions or invent clinical requirements**.
 
 Example:
 
@@ -853,6 +863,22 @@ The system should distinguish:
 
 # FR-13 — Clinical Entity Extraction
 
+Extract relevant clinical entities from documents and other supplied clinical evidence. Extraction must produce structured, traceable data rather than free-form text.
+
+Each entity shall include, where applicable:
+
+- Normalized clinical concept/code
+- Raw extracted value
+- Source document
+- Page/section
+- Bounding box where possible
+- Confidence score
+- Extraction timestamp
+- Model/provider name
+- Model version
+- Verification status
+- Verification timestamp/user when verified
+
 Extract relevant entities such as:
 
 ### Medication
@@ -889,10 +915,15 @@ Extract relevant entities such as:
 Every extracted entity should retain:
 
 - Source document
-- Page
+- Page/section
 - Bounding box where possible
 - Confidence score
 - Extraction timestamp
+- Model/provider name and version
+- Verification status
+- Normalized concept/code where applicable
+
+The system must preserve the original extracted value alongside any normalized value so that clinicians can trace and correct the transformation.
 
 ---
 
@@ -984,7 +1015,13 @@ The system should distinguish between:
 
 # FR-17 — Red-Flag Detection
 
-The platform shall identify predefined high-priority symptom patterns.
+The platform shall identify predefined high-priority symptom patterns using a **deterministic, auditable red-flag rule engine**.
+
+The final red-flag priority and triage alert must be produced by versioned clinical rules, not by an LLM alone. AI/LLM components may assist with symptom/entity extraction and normalization, but safety-critical rule evaluation remains the final decision path.
+
+Rules must be traceable to the structured patient state and record which rule/version produced each alert. Rules should be reviewed by an appropriately qualified clinical expert before use in a real clinical setting.
+
+Example rule:
 
 Examples:
 
@@ -1054,6 +1091,20 @@ Detected: 10:21 AM
 ---
 
 # FR-19 — Clinical Summary Generation
+
+The summary engine shall generate a concise physician-facing draft **only from the validated Structured Clinical Case Model and its retrieved source evidence**. It must not fill gaps using general medical knowledge or unsupported inference.
+
+The summary pipeline shall:
+
+1. Retrieve the validated structured clinical state.
+2. Retrieve relevant patient-provided evidence and provenance metadata.
+3. Generate a structured summary from that evidence.
+4. Validate the output against the case schema.
+5. Preserve source references for important extracted/document-derived statements.
+6. Mark unavailable information as **Unknown**, **Not reported**, or another configured explicit missing-data state.
+7. Send the draft to physician review before it becomes a verified clinical record.
+
+The summary engine must never invent a diagnosis, medication, dose, laboratory value, allergy, symptom, date, examination finding, or medical history.
 
 The summary engine shall combine:
 
@@ -1544,28 +1595,18 @@ AuditLog
 
 # 14. Recommended Technology Architecture
 
-## Frontend
+The MVP should use a concrete implementation stack. Alternatives may be evaluated during benchmarking, but the core architecture should not remain provider-agnostic during implementation.
 
-Recommended:
+## Frontend — MVP
 
 - Next.js
 - React
 - TypeScript
 - Tailwind CSS
 - Accessible component system
-- Web Speech / microphone integration where applicable
+- Browser microphone / audio capture
 
-Alternative:
-
-- Flutter
-
-For a hackathon, **Next.js + TypeScript** is recommended if the team is strongest in web development.
-
----
-
-# Backend
-
-Recommended:
+## Backend — MVP
 
 - Python
 - FastAPI
@@ -1574,62 +1615,45 @@ Recommended:
 - PostgreSQL
 - Redis
 
-Why FastAPI?
+Python is selected for the backend because the product has substantial OCR, NLP, ASR, document-processing, and ML integration requirements.
 
-The project contains significant AI/ML processing, and Python provides easier integration with:
+## Voice — MVP
 
-- OCR
-- NLP
-- ASR
-- document processing
-- ML models
+- Bhashini integration for supported Indian-language speech services where API access is available
+- A selected ASR provider/model with a documented fallback
+- Original transcript retained before any translation/normalization
+- TTS/translation treated as interface services, not as the clinical source of truth
 
----
+## Document AI — MVP
 
-# AI / ML Layer
+- PaddleOCR or the selected OCR provider for text and layout extraction
+- Image preprocessing and document-quality checks
+- Structured clinical entity extraction after OCR
+- Source/page/bounding-box/confidence provenance
 
-Potential components:
+Handwriting-specific models and advanced document models remain benchmarkable extensions unless they are actually integrated into the MVP.
 
-### ASR
+## Clinical AI — MVP
 
-- Indic ASR
-- Whisper-family models
-- AI4Bharat ecosystem
-- Bhashini ecosystem
+- Schema-driven clinical dialogue/state engine
+- Deterministic clinical/red-flag rules
+- LLM with structured JSON output for natural-language generation and bounded extraction/summarization tasks
+- JSON/schema validation and clinical-rule validation before physician presentation
 
-### OCR
+The LLM is not the source of truth for patient facts or safety-critical triage.
 
-- PaddleOCR
-- Tesseract for baseline
-- Transformer-based document models
-- LayoutLM-family models
-- Custom handwritten-text models where training data is available
+## Interoperability — MVP
 
-### NLP
+- Internal Structured Clinical Case Model
+- FHIR mapping layer
+- Valid FHIR resource/bundle generation and validation
+- Dedicated ABDM adapter interface; actual ABDM exchange only when required external access and integration prerequisites are available
 
-- Clinical NER
-- Rule-based medical extraction
-- Transformer models
-- LLM-based structured extraction
+## Storage — MVP
 
-### Summarization
-
-A local/open model should be preferred where feasible.
-
-Possible families:
-
-- Llama
-- Mistral
-- Qwen
-- Indic/Indian-language models
-
-The exact model should be benchmarked against:
-
-- Accuracy
-- Latency
-- Memory
-- Hardware requirements
-- Language support
+- PostgreSQL for structured clinical/application data
+- S3-compatible object storage / MinIO for documents and media
+- Redis for transient workflow/cache state
 
 ---
 
@@ -1764,7 +1788,37 @@ POST /api/v1/triage/alerts/{alert_id}/acknowledge
 
 # 17. FHIR / ABDM Readiness
 
-The internal architecture should be designed so that clinical information can eventually be mapped to FHIR resources.
+The internal architecture shall separate the **internal clinical model**, **FHIR representation**, and **external ABDM/HIS integration**.
+
+For the MVP, the implemented interoperability path is:
+
+```text
+Internal Structured Clinical Model
+          ↓
+FHIR Mapper
+          ↓
+FHIR Resource Validation
+          ↓
+FHIR Bundle / Export
+```
+
+External exchange is a separate integration path:
+
+```text
+FHIR Resources
+      ↓
+ABDM / HIS Adapter
+      ↓
+External APIs / Sandbox
+```
+
+The PRD must distinguish three states:
+
+- **Implemented:** functionality demonstrated in the MVP.
+- **FHIR-ready:** internal data can be transformed into valid FHIR resources/bundles, even if external exchange is not enabled.
+- **Future integration:** actual ABDM/HIS exchange requiring credentials, sandbox/API access, institutional onboarding, and external validation.
+
+The product must not claim production ABDM connectivity unless the exchange has actually been implemented and demonstrated.
 
 Potential mappings include:
 
@@ -1875,27 +1929,43 @@ Can access:
 
 # 20. Privacy Requirements
 
-The product should follow privacy-by-design principles.
+The product shall implement privacy-by-design controls. This PRD describes engineering controls and does not by itself constitute a legal certification of compliance with any privacy law.
+
+### Consent Before Processing
+
+Clinical data collection and document processing must occur only after the configured consent step has been completed, except for narrowly defined operational data required to initiate the consent workflow.
 
 ### Data Minimization
 
-Collect only information required for the clinical workflow.
+Collect only information required for the defined clinical workflow.
 
 ### Purpose Limitation
 
-Use data only for clearly defined purposes.
+Use patient data only for explicitly defined purposes within the product workflow.
+
+### Access Control
+
+Enforce role-based access control and least-privilege access for patient, clinician, triage, administrative, and system functions.
+
+### Encryption
+
+Protect sensitive data in transit and at rest using the deployment's approved encryption mechanisms. Secrets must not be stored in source code.
 
 ### Session Isolation
 
-A patient must never see the previous patient's information.
+A patient must never see another patient's information. Shared/kiosk sessions must be reset and isolated between patients.
 
-### Temporary Data Cleanup
+### Retention and Secure Deletion
 
-Temporary kiosk session data should be cleared after session completion according to the configured retention policy.
+Retention periods must be configurable by deployment policy. Temporary audio, OCR intermediates, session artifacts, and other transient data must be deleted or de-identified when no longer required.
 
 ### Auditability
 
-Sensitive operations must be logged.
+Sensitive operations must be logged, including authentication events, consent events, clinical edits/verifications, document access, AI-generated changes where applicable, and administrative actions.
+
+### Privacy Claims
+
+The implementation may state that it is **designed around DPDP/privacy principles** when the relevant controls are present. It must not claim legal or regulatory compliance unless that claim has been formally assessed and verified for the target deployment.
 
 ---
 
@@ -2153,48 +2223,73 @@ These are **engineering targets**, not claims that the final system will automat
 
 # 27. MVP Definition
 
-The MVP should NOT attempt to implement everything.
+The MVP should focus on one reliable, demonstrable end-to-end clinical intake vertical slice rather than attempting to implement every planned feature.
 
-A strong hackathon MVP should contain:
-
-## Must Have
-
-### Patient
+## Must Have — Patient Workflow
 
 - Language selection
-- Registration
-- Consent
+- Registration / patient identification
+- Consent before clinical processing
 - Voice input
-- Touch input
-- Basic clinical history
+- Touch input fallback
+- Schema-driven adaptive clinical history
+- Deterministic red-flag screening
 - Document upload
-- OCR
-- Entity extraction
-- Timeline
-- Summary
 
-### Doctor
+## Must Have — Document Workflow
+
+- OCR
+- Basic medication and laboratory entity extraction
+- Confidence scores
+- Source document/page provenance
+- Human verification state
+- Clinical timeline
+
+## Must Have — Doctor Workflow
 
 - Patient queue
 - Clinical summary
+- Red-flag visibility
 - Document viewer
 - Timeline
-- Edit/verify
+- Edit/correct/verify controls
+- Source traceability for extracted information
 
-### AI
+## Must Have — AI/Safety
 
-- ASR
-- Clinical entity extraction
-- Basic adaptive questioning
-- Summary generation
-- Red-flag engine
+- Selected ASR path
+- Schema-driven dialogue/state engine
+- Structured clinical entity extraction
+- Deterministic red-flag rules
+- Evidence-grounded summary generation
+- JSON/schema validation
+- Explicit UNKNOWN / Not reported states
 
-### Security
+## Must Have — Interoperability
+
+- Internal Structured Clinical Case Model
+- FHIR mapping
+- Valid FHIR resource/bundle generation
+- Clearly separated ABDM/HIS adapter interface
+
+## Must Have — Security/Privacy
 
 - Authentication
 - RBAC
+- Consent records
 - Session isolation
+- Encryption in transit/at rest where supported by deployment
 - Audit logging
+- Configurable retention/cleanup
+
+## Explicitly Deferred from the MVP
+
+- Production ABDM exchange unless the required external integration prerequisites are available and demonstrable
+- Large-scale hospital ERP functionality
+- Autonomous diagnosis, prescription, or treatment decisions
+- Broad specialty coverage beyond the demonstrated workflow
+- Advanced handwriting-model training
+- Offline/edge deployment unless it is required for the demonstrated environment
 
 ---
 
@@ -2208,9 +2303,9 @@ After MVP:
 - More clinical specialties
 - More AYUSH frameworks
 - Advanced timeline analytics
-- FHIR conversion
-- ABDM integration
-- HIS integration
+- Expanded FHIR mappings and validation
+- Actual ABDM integration when required sandbox/API access and institutional prerequisites are available
+- HIS integration through a dedicated adapter
 - Offline/edge inference
 - Hospital analytics
 
@@ -2351,6 +2446,50 @@ symptom, date, allergy, or medical history.
 ---
 
 # 33. Clinical Safety Architecture
+
+The safety architecture shall be:
+
+```text
+Patient Voice / Touch / Documents
+              ↓
+Input Transcription / OCR
+              ↓
+Clinical Entity Extraction + Normalization
+              ↓
+Structured Clinical State
+        ┌─────┼───────────┐
+        ↓     ↓           ↓
+ Question   Red-Flag    Missing-Data
+  Policy      Rules       Detection
+        └─────┼───────────┘
+              ↓
+     Validated Case Model
+              ↓
+       Evidence Retrieval
+              ↓
+      LLM / Summary Layer
+              ↓
+       JSON / Schema Validation
+              ↓
+      Physician Draft View
+              ↓
+     Human Review / Verify
+              ↓
+       Verified Case Record
+```
+
+The key separation is: **AI generates or extracts; structured state stores facts; rules constrain safety-critical behavior; validation rejects malformed or unsupported output; humans verify the clinical record.**
+
+For the interview engine, the same principle applies: the ontology/state machine selects the information to collect, while the language model may phrase the question. For red flags, versioned deterministic rules make the final triage decision. For summaries, the model receives only validated case data and source evidence.
+
+### AI Safety Invariants
+
+- Patient-provided facts must remain distinguishable from AI-generated text.
+- Unknown information must remain unknown; the system must not infer it from context.
+- Every safety-critical alert must identify the rule and rule version that produced it.
+- Extracted document facts must retain provenance and confidence.
+- Physician edits and verification status must be auditable.
+- No LLM output becomes a verified clinical fact merely because it is fluent or high-confidence.
 
 The system should use deterministic rules for safety-critical red flags where possible.
 
@@ -3236,7 +3375,9 @@ Build:
 ```text
 FHIR-ready internal model
 +
-Mock ABDM adapter
+Dedicated ABDM adapter interface
++
+Mock/sandbox adapter for demonstration
 ```
 
 for the hackathon.
@@ -3409,10 +3550,10 @@ A polished end-to-end prototype is more valuable than five half-working integrat
  └─────────────────────────────┘
                    │
                    ▼
-             FHIR ADAPTER
+      FHIR MAPPING LAYER
                    │
                    ▼
-          HIS / ABDM Layer
+       HIS / ABDM ADAPTERS
 ```
 
 ---
@@ -3544,7 +3685,7 @@ The system does not pretend to replace a clinician and clearly handles uncertain
 
 ### 5. Scalability
 
-The architecture can evolve into a hospital-wide and ABDM-compatible platform.
+The architecture can evolve into a hospital-wide platform with a dedicated interoperability layer that can support ABDM integration when the required external prerequisites are available.
 
 ---
 

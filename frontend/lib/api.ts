@@ -10,6 +10,8 @@ export const apiClient = axios.create({
   },
 });
 
+export const api = apiClient;
+
 // ── Request interceptor: attach Bearer token ─────────────────────────────────
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -361,4 +363,39 @@ export async function deleteMedicalRecord(
     `/api/v1/medical-records/${recordId}`
   );
   return data;
+}
+
+// Get timeline-ready patient records with date sorting
+export async function getPatientTimeline(
+  patientId: number | string
+): Promise<MedicalRecordResponse[]> {
+  const res = await apiClient.get<MedicalRecordResponse[]>(
+    `/api/v1/patients/${patientId}/medical-records`
+  );
+  return res.data.sort(
+    (a: MedicalRecordResponse, b: MedicalRecordResponse) =>
+      new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime()
+  );
+}
+
+// Save AYUSH history
+export async function createAyushHistory(
+  sessionId: number | string,
+  data: Record<string, any>
+): Promise<any> {
+  const res = await apiClient.post(
+    `/api/v1/sessions/${sessionId}/ayush-history`,
+    data
+  );
+  return res.data;
+}
+
+// Get AYUSH history for session
+export async function getAyushHistory(
+  sessionId: number | string
+): Promise<any> {
+  const res = await apiClient.get(
+    `/api/v1/sessions/${sessionId}/ayush-history`
+  );
+  return res.data;
 }

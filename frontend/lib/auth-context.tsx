@@ -18,12 +18,14 @@ interface AuthContextValue {
   patientId: string | null;
   patientName: string | null;
   sessionId: string | null;
+  department: string | null;
   login: (email: string, password: string) => Promise<string>;
   logout: () => void;
   registerUser: (email: string, password: string, fullName: string) => Promise<string>;
   setPatientId: (id: string | number) => void;
   setPatientName: (name: string) => void;
   setSessionId: (id: string | number) => void;
+  setDepartment: (dept: string) => void;
   clearSession: () => void;
 }
 
@@ -35,6 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [patientId, setPatientIdState] = useState<string | null>(null);
   const [patientName, setPatientNameState] = useState<string | null>(null);
   const [sessionId, setSessionIdState] = useState<string | null>(null);
+  const [department, setDepartmentState] = useState<string | null>(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('md_token');
@@ -42,6 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const storedPatientId = localStorage.getItem('md_patient_id');
     const storedPatientName = localStorage.getItem('md_patient_name');
     const storedSessionId = localStorage.getItem('md_session_id');
+    const storedDepartment = localStorage.getItem('md_department');
 
     if (storedToken && storedEmail) {
       setToken(storedToken);
@@ -50,6 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (storedPatientId) setPatientIdState(storedPatientId);
     if (storedPatientName) setPatientNameState(storedPatientName);
     if (storedSessionId) setSessionIdState(storedSessionId);
+    if (storedDepartment) setDepartmentState(storedDepartment);
   }, []);
 
   const persistToken = (t: string, email: string) => {
@@ -82,11 +87,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setPatientIdState(null);
     setPatientNameState(null);
     setSessionIdState(null);
+    setDepartmentState(null);
     localStorage.removeItem('md_token');
     localStorage.removeItem('md_email');
     localStorage.removeItem('md_patient_id');
     localStorage.removeItem('md_patient_name');
     localStorage.removeItem('md_session_id');
+    localStorage.removeItem('md_department');
   }, []);
 
   const setPatientId = useCallback((id: string | number) => {
@@ -106,6 +113,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('md_session_id', normalizedId);
   }, []);
 
+  const setDepartment = useCallback((dept: string) => {
+    setDepartmentState(dept);
+    localStorage.setItem('md_department', dept);
+  }, []);
+
   const clearSession = useCallback(() => {
     logout();
   }, [logout]);
@@ -118,12 +130,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         patientId,
         patientName,
         sessionId,
+        department,
         login,
         logout,
         registerUser,
         setPatientId,
         setPatientName,
         setSessionId,
+        setDepartment,
         clearSession,
       }}
     >

@@ -31,11 +31,11 @@ export default function ConsentPage() {
     try {
       await createConsent(patientId, 'data_processing');
       await createConsent(patientId, 'voice_recording');
-      router.push('/intake');
+      router.push('/department');
     } catch (err: any) {
       console.error('Consent error:', err);
-      setError('Failed to record consent. Proceeding to intake.');
-      router.push('/intake');
+      setError('Failed to record consent. Proceeding to department selection.');
+      router.push('/department');
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,7 @@ export default function ConsentPage() {
     <KioskWrapper>
       <div className="w-full flex flex-col items-center gap-6">
         <ProgressStepper
-          steps={[t.stepLanguage, t.stepRegister, t.stepConsent, t.stepIntake, 'Records']}
+          steps={[t.stepLanguage, t.stepRegister, t.stepConsent, 'Department', t.stepIntake, 'Records']}
           currentStep={2}
         />
 

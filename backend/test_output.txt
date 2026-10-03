@@ -1,8 +1,0 @@
-POST CORS Status: 200
-POST CORS Allow Origin Header: http://localhost:3000
-Patient 1 Status: 200
-Patient 1 ID: 7 abha_id: None
-Patient 2 Status: 200
-Patient 2 ID: 8 abha_id: None
-Session 1 Status: 200
-Session 1 ID: 3 patient_id: 7 status: active

@@ -15,7 +15,8 @@ print(f"✓ Generated synthetic prescription sample: {img_p}")
 
 from backend.app.ocr import extract_ocr_text, extract_entities_from_text
 
-text = extract_ocr_text(img_p)
+ocr_result = extract_ocr_text(img_p)
+text = ocr_result["text"]
 print(f"\n✓ OCR Text Extraction Output:\n---\n{text}\n---")
 
 entities = extract_entities_from_text(text)

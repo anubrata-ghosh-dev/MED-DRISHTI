@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "4.0",
   "start_question_id": "chief_complaint",
   "questions": [
     {
@@ -9,64 +9,255 @@
       "text_bn": "আজ আপনি কেন এসেছেন? আপনার মূল সমস্যাটি বলুন।",
       "text_ta": "இன்று ஏன் வந்துள்ளீர்கள்? உங்கள் முக்கிய பிரச்சனையை கூறுங்கள்.",
       "text_ml": "ഇന്ന് എന്താണ് വന്നിരിക്കുന്നത്? നിങ്ങളുടെ പ്രധാന പ്രശ്നം പറയുക.",
-      "field": "chief_complaint",
-      "next": "duration",
+      "field": "chief_complaint.complaint",
+      "next": "cc_duration",
+      "adaptive_next": {
+        "cardiac": "hpi_cardiac_start",
+        "respiratory": "hpi_respiratory_start",
+        "general": "cc_duration"
+      },
       "required": true
     },
     {
-      "id": "duration",
-      "text": "How long have you had this problem?",
-      "text_hi": "यह समस्या कितने समय से है?",
+      "id": "cc_duration",
+      "text": "How long have you been experiencing this problem?",
+      "text_hi": "यह समस्या आपको कितने समय से है?",
       "text_bn": "এই সমস্যাটি কত দিন ধরে আছে?",
-      "text_ta": "இந்த பிரச்சனை எத்தனை நாட்களாக உள்ளது?",
-      "text_ml": "ഈ പ്രശ്നം എത്ര നാളായി ഉണ്ട്?",
-      "field": "hpi_duration",
-      "next": "severity",
+      "field": "chief_complaint.duration",
+      "next": "cc_severity",
       "required": true
     },
     {
-      "id": "severity",
-      "text": "On a scale of 1 to 10, how severe is your discomfort right now? 1 is very mild, 10 is unbearable.",
+      "id": "cc_severity",
+      "text": "On a scale of 1 to 10, how severe is the discomfort right now? (1 is mild, 10 is unbearable)",
       "text_hi": "1 से 10 के पैमाने पर, अभी आपकी तकलीफ कितनी है?",
       "text_bn": "১ থেকে ১০ এর মধ্যে, এখন আপনার কষ্ট কতটা তীব্র?",
-      "text_ta": "1 முதல் 10 வரை, உங்கள் வலி எவ்வளவு கடுமையாக உள்ளது?",
-      "text_ml": "1 മുതൽ 10 വരെയുള്ള അളവിൽ, നിങ്ങളുടെ ബുദ്ധിമുട്ട് എത്രത്തോളമുണ്ട്?",
-      "field": "hpi_severity",
-      "next": "location",
+      "field": "chief_complaint.severity",
+      "next": "cc_onset",
       "required": true
     },
     {
-      "id": "location",
-      "text": "Where exactly do you feel this discomfort? Point to the area if possible.",
+      "id": "cc_onset",
+      "text": "Did this start suddenly or gradually?",
+      "text_hi": "क्या यह अचानक शुरू हुआ या धीरे-धीरे?",
+      "text_bn": "এটি কি হঠাৎ শুরু হয়েছে নাকি ধীরে ধীরে?",
+      "field": "chief_complaint.onset",
+      "next": "hpi_general_start",
+      "required": false
+    },
+    {
+      "id": "hpi_general_start",
+      "text": "Could you tell me more about how this problem has progressed over time?",
+      "text_hi": "क्या आप मुझे बता सकते हैं कि समय के साथ यह समस्या कैसे बढ़ी है?",
+      "text_bn": "সময় সাথে সাথে এই সমস্যাটি কীভাবে পরিবর্তিত হয়েছে তা কি আমাকে বলবেন?",
+      "field": "hpi.progression",
+      "next": "hpi_location",
+      "required": false
+    },
+    {
+      "id": "hpi_location",
+      "text": "Where exactly do you feel the discomfort?",
       "text_hi": "यह तकलीफ ठीक कहाँ है?",
       "text_bn": "ঠিক কোথায় আপনার এই সমস্যা হচ্ছে?",
-      "text_ta": "இந்த அசௌகரியம் சரியாக எங்கே உணர்கிறீர்கள்?",
-      "text_ml": "എവിടെയാണ് ഈ ബുദ്ധിമുട്ട് അനുഭവപ്പെടുന്നത്?",
-      "field": "hpi_location",
-      "next": "medications",
+      "field": "hpi.location",
+      "next": "hpi_character",
       "required": false
     },
     {
-      "id": "medications",
-      "text": "Are you currently taking any medications? If yes, please name them.",
-      "text_hi": "क्या आप अभी कोई दवाई ले रहे हैं?",
-      "text_bn": "আপনি কি এখন কোনো ওষুধ খাচ্ছেন?",
-      "text_ta": "நீங்கள் தற்போது ஏதேனும் மருந்துகள் உட்கொள்கிறீர்களா?",
-      "text_ml": "നിങ്ങൾ ഇപ്പോൾ വല്ല മരുന്നുകളും കഴിക്കുന്നുണ്ടോ?",
-      "field": "medications",
-      "next": "allergies",
+      "id": "hpi_character",
+      "text": "How would you describe the feeling? (e.g., sharp, dull, burning, aching)",
+      "text_hi": "आप इस तकलीफ को कैसे समझाएंगे? (जैसे: तेज, हल्का, जलन वाला, या दर्दनाक)",
+      "text_bn": "আপনি এই কষ্টটিকে কীভাবে বর্ণনা করবেন? (যেমন: তীব্র, হালকা, জ্বলা বা ব্যথা)",
+      "field": "hpi.character",
+      "next": "hpi_radiation",
       "required": false
     },
     {
-      "id": "allergies",
-      "text": "Do you have any known allergies to medicines or food?",
-      "text_hi": "क्या आपको किसी दवाई या खाने से एलर्जी है?",
-      "text_bn": "আপনার কি কোনো ওষুধ বা খাবারে অ্যালার্জি আছে?",
-      "text_ta": "உங்களுக்கு ஏதேனும் மருந்து அல்லது உணவு ஒவ்வாமை உள்ளதா?",
-      "text_ml": "മരുന്നുകളോ ഭക്ഷണങ്ങളോ അലർജിയുണ്ടോ?",
-      "field": "allergies",
+      "id": "hpi_radiation",
+      "text": "Does the pain or discomfort spread to any other part of your body?",
+      "text_hi": "क्या यह दर्द शरीर के किसी और हिस्से तक फैल रहा है?",
+      "text_bn": "এই ব্যথা কি শরীরের অন্য কোনো অংশে ছড়িয়ে পড়ছে?",
+      "field": "hpi.radiation",
+      "next": "hpi_aggravating",
+      "required": false
+    },
+    {
+      "id": "hpi_aggravating",
+      "text": "Is there anything that makes the problem worse?",
+      "text_hi": "क्या ऐसी कोई चीज़ है जिससे यह समस्या और बढ़ जाती है?",
+      "text_bn": "এমন কিছু আছে কি যা এই সমস্যাটিকে আরও বাড়িয়ে দেয়?",
+      "field": "hpi.aggravating_factors",
+      "next": "hpi_relieving",
+      "required": false
+    },
+    {
+      "id": "hpi_relieving",
+      "text": "Is there anything that makes it feel better?",
+      "text_hi": "क्या ऐसी कोई चीज़ है जिससे आपको आराम मिलता है?",
+      "text_bn": "এমন কিছু আছে কি যা আপনার কষ্ট কমিয়ে দেয়?",
+      "field": "hpi.relieving_factors",
+      "next": "hpi_associated",
+      "required": false
+    },
+    {
+      "id": "hpi_associated",
+      "text": "Are you experiencing any other symptoms along with this?",
+      "text_hi": "क्या आपको इसके साथ कोई और लक्षण भी महसूस हो रहे हैं?",
+      "text_bn": "এর সাথে কি আপনি অন্য কোনো উপসর্গ অনুভব করছেন?",
+      "field": "hpi.associated_symptoms",
+      "next": "pmh_start",
+      "required": false
+    },
+    {
+      "id": "pmh_start",
+      "text": "Do you have any existing medical conditions, like diabetes or high blood pressure?",
+      "text_hi": "क्या आपको पहले से कोई बीमारी है, जैसे मधुमेह या उच्च रक्तचाप?",
+      "text_bn": "আপনার কি আগে থেকে কোনো রোগ আছে, যেমন ডায়াবেটিস বা উচ্চ রক্তচাপ?",
+      "field": "past_medical_histories.condition",
+      "next": "pmh_detail",
+      "required": false
+    },
+    {
+      "id": "pmh_detail",
+      "text": "When were you diagnosed with this condition, and is it currently under control?",
+      "text_hi": "आपको यह बीमारी कब पता चली, और क्या यह अभी नियंत्रण में है?",
+      "text_bn": "আপনার এই রোগটি কবে ধরা পড়েছে এবং এটি কি এখন নিয়ন্ত্রণে আছে?",
+      "field": "past_medical_histories.status",
+      "next": "psh_start",
+      "required": false
+    },
+    {
+      "id": "psh_start",
+      "text": "Have you ever had any surgeries or major medical procedures?",
+      "text_hi": "क्या आपकी कभी कोई सर्जरी या कोई बड़ा मेडिकल प्रोसीजर हुआ है?",
+      "text_bn": "আপনার কি কখনও কোনো সার্জারি বা বড় কোনো মেডিকেল প্রসিডিউর হয়েছে?",
+      "field": "past_surgical_histories.procedure",
+      "next": "psh_detail",
+      "required": false
+    },
+    {
+      "id": "psh_detail",
+      "text": "Could you tell me when and where the surgery took place, and what the outcome was?",
+      "text_hi": "क्या आप बता सकते हैं कि सर्जरी कब और कहाँ हुई थी, और उसका परिणाम क्या रहा?",
+      "text_bn": "সার্জারিটি কবে এবং কোথায় হয়েছিল এবং তার ফলাফল কী ছিল তা কি আমাকে বলবেন?",
+      "field": "past_surgical_histories.outcome",
+      "next": "med_start",
+      "required": false
+    },
+    {
+      "id": "med_start",
+      "text": "Are you currently taking any medicines, including supplements or traditional remedies?",
+      "text_hi": "क्या आप अभी कोई दवाई ले रहे हैं, जिसमें सप्लीमेंट्स या पारंपरिक दवाएं शामिल हों?",
+      "text_bn": "আপনি কি এখন কোনো ওষুধ খাচ্ছেন, যার মধ্যে সাপ্লিমেন্ট বা ঐতিহ্যবাহী প্রতিকার অন্তর্ভুক্ত?",
+      "field": "medication_histories.drug_name",
+      "next": "med_detail",
+      "required": false
+    },
+    {
+      "id": "med_detail",
+      "text": "Could you please provide the dose, frequency, and for how long you have been taking it?",
+      "text_hi": "कृपया दवाई की खुराक, कितनी बार लेनी है और आप इसे कितने समय से ले रहे हैं, बताएं।",
+      "text_bn": "দয়া করে ওষুধের ডোজ, কতবার নিতে হয় এবং আপনি কতদিন ধরে এটি নিচ্ছেন তা বলুন।",
+      "field": "medication_histories.dose",
+      "next": "all_start",
+      "required": false
+    },
+    {
+      "id": "all_start",
+      "text": "Do you have any known allergies to medicines, food, or environmental factors?",
+      "text_hi": "क्या आपको किसी दवाई, खाने या पर्यावरण से एलर्जी है?",
+      "text_bn": "আপনার কি কোনো ওষুধ, খাবার বা পরিবেশগত কারণে অ্যালার্জি আছে?",
+      "field": "allergy_histories.allergen",
+      "next": "all_detail",
+      "required": false
+    },
+    {
+      "id": "all_detail",
+      "text": "What kind of reaction do you have when exposed to this allergen?",
+      "text_hi": "एलर्जी होने पर आपको किस तरह की प्रतिक्रिया होती है?",
+      "text_bn": "এই অ্যালার্জেনটির সংস্পর্শে আসলে আপনার কী ধরণের প্রতিক্রিয়া হয়?",
+      "field": "allergy_histories.reaction",
+      "next": "fam_start",
+      "required": false
+    },
+    {
+      "id": "fam_start",
+      "text": "Does anyone in your immediate family have similar health problems or hereditary conditions?",
+      "text_hi": "क्या आपके परिवार में किसी और को भी ऐसी ही स्वास्थ्य समस्याएं या वंशानुगत बीमारियां हैं?",
+      "text_bn": "আপনার পরিবারের কারও কি একই ধরণের স্বাস্থ্য সমস্যা বা বংশগত রোগ আছে?",
+      "field": "family_histories.condition",
+      "next": "fam_detail",
+      "required": false
+    },
+    {
+      "id": "fam_detail",
+      "text": "Which family member has this condition and how does it affect them?",
+      "text_hi": "परिवार के किस सदस्य को यह समस्या है और यह उन्हें कैसे प्रभावित करती है?",
+      "text_bn": "পরিবারের কোন সদস্যের এই সমস্যা আছে এবং এটি তাদের কীভাবে প্রভাবিত করে?",
+      "field": "family_histories.relevance",
+      "next": "pers_start",
+      "required": false
+    },
+    {
+      "id": "pers_start",
+      "text": "I'd like to ask a few questions about your lifestyle. Do you use tobacco, alcohol, or have any specific dietary habits?",
+      "text_hi": "मैं आपके जीवनशैली के बारे में कुछ सवाल पूछना चाहता हूँ। क्या आप तंबाकू, शराब का सेवन करते हैं, या आपकी कोई विशेष खान-पान की आदतें हैं?",
+      "text_bn": "আমি আপনার জীবনযাপন সম্পর্কে কিছু প্রশ্ন করতে চাই। আপনি কি তামাক, অ্যালকোহল ব্যবহার করেন বা আপনার কি কোনো বিশেষ খাদ্যাভ্যাস আছে?",
+      "field": "personal_histories.category",
+      "next": "pers_detail",
+      "required": false
+    },
+    {
+      "id": "pers_detail",
+      "text": "Could you provide more details about these habits and how they affect your daily life?",
+      "text_hi": "क्या आप इन आदतों के बारे में अधिक विवरण दे सकते हैं और वे आपके दैनिक जीवन को कैसे प्रभावित करती हैं?",
+      "text_bn": "এই অভ্যাসগুলি সম্পর্কে আরও বিস্তারিত বলতে পারেন এবং এগুলো আপনার দৈনন্দিন জীবনে কীভাবে প্রভাব ফেলে?",
+      "field": "personal_histories.detail",
+      "next": "ros_start",
+      "required": false
+    },
+    {
+      "id": "ros_start",
+      "text": "I will now ask a few quick questions about different systems of your body. Starting with your heart and lungs: any chest pain, cough, or shortness of breath?",
+      "text_hi": "अब मैं आपके शरीर के विभिन्न अंगों के बारे में कुछ त्वरित सवाल पूछूँगा। हृदय और फेफड़ों से शुरू करते हुए: क्या आपको सीने में दर्द, खांसी या सांस लेने में कठिनाई होती है?",
+      "text_bn": "আমি এখন আপনার শরীরের বিভিন্ন অঙ্গ সম্পর্কে কিছু দ্রুত প্রশ্ন করব। আপনার হৃদয় এবং ফুসফুস থেকে শুরু করে: বুকে ব্যথা, কাশি বা শ্বাসকষ্ট আছে কি?",
+      "field": "review_of_systems.system",
+      "next": "ros_detail",
+      "required": false
+    },
+    {
+      "id": "ros_detail",
+      "text": "Can you describe these findings in more detail?",
+      "text_hi": "क्या आप इन लक्षणों का और विस्तार से वर्णन कर सकते हैं?",
+      "text_bn": "আপনি কি এই লক্ষণগুলো আরও বিস্তারিতভাবে বর্ণনা করতে পারেন?",
+      "field": "review_of_systems.detail",
+      "next": "ayush_start",
+      "required": false
+    },
+    {
+      "id": "ayush_start",
+      "text": "Since you are visiting an AYUSH facility, I'd like to capture some traditional health parameters. Do you know your Prakriti (body type) or any other Ayurvedic assessment?",
+      "text_hi": "चूँकि आप एक आयुष सुविधा में आए हैं, मैं कुछ पारंपरिक स्वास्थ्य मापदंडों को रिकॉर्ड करना चाहूँगा। क्या आप अपनी प्रकृति या किसी अन्य आयुर्वेदिक मूल्यांकन के बारे में जानते हैं?",
+      "text_bn": "যেহেতু আপনি একটি আয়ুষ কেন্দ্রে এসেছেন, আমি কিছু ঐতিহ্যগত স্বাস্থ্য প্যারামিটার সংগ্রহ করতে চাই। আপনি কি আপনার প্রকৃতি বা অন্য কোনো আয়ুর্বেদিক মূল্যায়ন সম্পর্কে জানেন?",
+      "field": "ayush_histories.parameter",
+      "next": "ayush_detail",
+      "required": false
+    },
+    {
+      "id": "ayush_detail",
+      "text": "Could you please provide the value or more details regarding this Ayurvedic assessment?",
+      "text_hi": "कृपया इस आयुर्वेदिक मूल्यांकन का मान या अधिक विवरण प्रदान करें।",
+      "text_bn": "দয়া করে এই আয়ুর্বেদিক মূল্যায়নের মান বা আরও বিস্তারিত বলুন।",
+      "field": "ayush_histories.detail",
       "next": null,
       "required": false
     }
-  ]
+  ],
+  "adaptive_rules": {
+    "chief_complaint": {
+      "cardiac": ["chest pain", "heart", "tightness", "pressure", "palpitations"],
+      "respiratory": ["breath", "cough", "wheeze", "asthma", "lungs", "shortness of breath"],
+      "general": ["everything else"]
+    }
+  }
 }

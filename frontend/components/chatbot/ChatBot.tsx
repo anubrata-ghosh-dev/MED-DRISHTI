@@ -79,7 +79,6 @@ export function ChatBot() {
   const [isRecording, setIsRecording] = useState(false);
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [interimText, setInterimText] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -118,7 +117,6 @@ export function ChatBot() {
   const startVoiceInput = useCallback(() => {
     setVoiceError(null);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const SpeechRecognitionAPI: any =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 

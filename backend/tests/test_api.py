@@ -74,4 +74,4 @@ def test_red_flag_evaluation():
     from app.red_flag_engine import evaluate_red_flags
     triggered = evaluate_red_flags("Patient experiencing severe chest pain radiating to left arm")
     assert len(triggered) > 0
-    assert any(t["rule_id"] == "RF001" for t in triggered)
+    assert any(t["rule_id"] == "RF_CARDIAC_URGENT" for t in triggered)

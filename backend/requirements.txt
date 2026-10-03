@@ -6,5 +6,24 @@ python-multipart==0.0.6
 pyjwt==2.13.0
 passlib[argon2]==1.7.4
 email-validator==2.0.0
-sarvamai
+# Current SDK exposes `SarvamAI`, used by chat, STT, TTS, and translation.
+sarvamai>=0.1.34
 python-dotenv
+
+# Database
+psycopg2-binary>=2.9.9
+alembic>=1.13.0
+
+# HTTP & API
+requests>=2.31.0
+
+# Image & OCR & Processing
+pillow>=10.1.0
+pytesseract>=0.3.10
+easyocr>=1.7.0
+pdf2image>=1.16.3
+opencv-python-headless>=4.8.0
+
+# Other utils
+gtts>=2.5.0
+python-dateutil>=2.8.2

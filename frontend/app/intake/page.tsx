@@ -19,6 +19,19 @@ export default function IntakePage() {
   const [collectedAnswers, setCollectedAnswers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAyush, setIsAyush] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (
+        params.get('mode') === 'ayush' ||
+        localStorage.getItem('md_department')?.includes('Ayurveda')
+      ) {
+        setIsAyush(true);
+      }
+    }
+  }, []);
 
   // Fetch initial or next question
   const fetchQuestion = async (lastAnswer?: string, qId?: string | null) => {
@@ -80,6 +93,15 @@ export default function IntakePage() {
         medications: collectedAnswers['medications'] || 'None reported',
         allergies: collectedAnswers['allergies'] || 'None reported',
       });
+
+      if (isAyush) {
+        try {
+          const { createAyushHistory } = await import('@/lib/api');
+          await createAyushHistory(activeSessionId, collectedAnswers);
+        } catch (ayushErr) {
+          console.warn('AYUSH history could not be saved:', ayushErr);
+        }
+      }
     } catch (err) {
       console.error('Failed to save history:', err);
     }
@@ -89,9 +111,16 @@ export default function IntakePage() {
     <KioskWrapper>
       <div className="w-full flex flex-col items-center gap-6">
         <ProgressStepper
-          steps={['Language', 'Register', 'Consent', 'Intake', 'Records']}
-          currentStep={3}
+          steps={['Language', 'Register', 'Consent', 'Department', 'Intake', 'Records']}
+          currentStep={4}
         />
+
+        {isAyush && (
+          <div className="flex items-center gap-2 rounded-full border border-[rgba(31,111,99,0.25)] bg-[rgba(31,111,99,0.08)] px-4 py-1 text-xs font-bold text-[var(--pulse-teal)] animate-fadeIn">
+            <span>🧘</span>
+            <span>Ayurveda (AYUSH) Intake Mode / आयुष परामर्श</span>
+          </div>
+        )}
 
         {loading && !currentQuestionId ? (
           <div className="flex flex-col items-center gap-4 py-12">

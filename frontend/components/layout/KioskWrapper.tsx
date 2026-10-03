@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import Link from 'next/link';
 import { LanguageTag } from '../ui/LanguageTag';
 
 interface KioskWrapperProps {
@@ -28,7 +29,7 @@ export const KioskWrapper: React.FC<KioskWrapperProps> = ({
     <div className="min-h-screen bg-[var(--clinical-mist)] text-[var(--chart-ink)] flex flex-col relative select-none overflow-x-hidden">
       <header className="w-full border-b border-[var(--line)] bg-white/70 backdrop-blur-md z-20">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-8">
-          <a href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--pulse-teal)] text-xl font-black text-white shadow-lg shadow-[rgba(31,111,99,0.18)]">
               🏥
             </div>
@@ -38,27 +39,27 @@ export const KioskWrapper: React.FC<KioskWrapperProps> = ({
                 Clinical Intake System
               </p>
             </div>
-          </a>
+          </Link>
 
           <div className="hidden items-center gap-1 rounded-2xl border border-[var(--line)] bg-slate-100/90 p-1.5 text-xs font-bold md:flex">
-            <a
+            <Link
               href="/"
               className="rounded-xl px-3 py-1.5 text-slate-700 hover:bg-white hover:text-[var(--chart-ink)]"
             >
               📱 Kiosk Intake
-            </a>
-            <a
+            </Link>
+            <Link
               href="/triage"
               className="rounded-xl px-3 py-1.5 text-slate-700 hover:bg-white hover:text-[var(--chart-ink)]"
             >
               🚨 Nurse Triage
-            </a>
-            <a
+            </Link>
+            <Link
               href="/doctor"
               className="rounded-xl px-3 py-1.5 text-slate-700 hover:bg-white hover:text-[var(--chart-ink)]"
             >
               🩺 Doctor Workspace
-            </a>
+            </Link>
           </div>
 
           {showLanguageTag && <LanguageTag />}
@@ -72,9 +73,9 @@ export const KioskWrapper: React.FC<KioskWrapperProps> = ({
       <footer className="mx-auto mt-4 flex w-full max-w-7xl flex-col items-center justify-between gap-2 border-t border-[var(--line)] px-4 py-4 text-center text-xs font-medium text-slate-500 sm:flex-row sm:text-left md:px-8">
         <span>Safe & Confidential • Med-Drishti MVP</span>
         <div className="flex gap-4">
-          <a href="/" className="hover:text-[var(--chart-ink)]">Kiosk Mode</a>
-          <a href="/triage" className="hover:text-[var(--chart-ink)]">Triage Alert Feed</a>
-          <a href="/doctor" className="hover:text-[var(--chart-ink)]">Doctor Queue</a>
+          <Link href="/" className="hover:text-[var(--chart-ink)]">Kiosk Mode</Link>
+          <Link href="/triage" className="hover:text-[var(--chart-ink)]">Triage Alert Feed</Link>
+          <Link href="/doctor" className="hover:text-[var(--chart-ink)]">Doctor Queue</Link>
         </div>
       </footer>
     </div>

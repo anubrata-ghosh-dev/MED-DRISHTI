@@ -13,6 +13,25 @@ export default function DonePage() {
   const t = getTranslation(language);
 
   const [countdown, setCountdown] = useState(15);
+  const [sessionCleared, setSessionCleared] = useState(false);
+
+  // Kiosk session cleanup after 1 second
+  useEffect(() => {
+    const cleanupTimer = setTimeout(() => {
+      try {
+        localStorage.removeItem('md_patient_id');
+        localStorage.removeItem('md_session_id');
+        localStorage.removeItem('md_language');
+        localStorage.removeItem('md_department');
+        sessionStorage.clear();
+        setSessionCleared(true);
+      } catch (err) {
+        console.error('Failed to clean up kiosk session:', err);
+      }
+    }, 1000);
+
+    return () => clearTimeout(cleanupTimer);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -46,6 +65,12 @@ export default function DonePage() {
           <p className="text-slate-600 text-base font-medium">
             {t.doneSub}
           </p>
+        </div>
+
+        {/* Kiosk session secure cleanup message */}
+        <div className="w-full flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-xs font-semibold text-emerald-800 shadow-sm">
+          <span>🔒</span>
+          <span>Your session has been securely cleared.</span>
         </div>
 
         <div className="w-full rounded-2xl border border-[var(--line)] bg-slate-50 p-4 text-sm font-semibold text-slate-600">

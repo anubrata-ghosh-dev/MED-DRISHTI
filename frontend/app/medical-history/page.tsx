@@ -113,11 +113,11 @@ export default function MedicalHistoryPage() {
   };
 
   const handleContinue = () => {
-    router.push('/done');
+    router.push('/timeline');
   };
 
   const handleSkip = () => {
-    router.push('/done');
+    router.push('/timeline');
   };
 
   const getRecordTypeInfo = (type: string) => {
@@ -128,8 +128,8 @@ export default function MedicalHistoryPage() {
     <KioskWrapper>
       <div className="w-full flex flex-col items-center gap-6">
         <ProgressStepper
-          steps={['Language', 'Register', 'Consent', 'Intake', 'Records']}
-          currentStep={4}
+          steps={['Language', 'Register', 'Consent', 'Department', 'Intake', 'Records']}
+          currentStep={5}
         />
 
         {/* Header */}

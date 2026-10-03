@@ -109,28 +109,19 @@ def seed_data():
 
         # 4. Seed Clinical Histories
         print("Seeding clinical histories...")
-        history1 = models.ClinicalHistory(
-            session_id=session1.id,
-            chief_complaint="Severe crushing chest pain radiating to left arm",
-            history_of_present_illness="Duration: 2 hours; Severity: 9/10; Onset while walking.",
-            medications="Telmisartan 40mg once daily",
-            allergies="Penicillin"
-        )
-        history2 = models.ClinicalHistory(
-            session_id=session2.id,
-            chief_complaint="High fever and severe shortness of breath",
-            history_of_present_illness="Duration: 3 days; Severity: 8/10; Temp 102.5°F",
-            medications="Paracetamol 500mg as needed",
-            allergies="None reported"
-        )
-        history3 = models.ClinicalHistory(
-            session_id=session3.id,
-            chief_complaint="Mild headache and routine BP check",
-            history_of_present_illness="Duration: 1 day; Severity: 3/10",
-            medications="Metformin 500mg twice daily",
-            allergies="None reported"
-        )
-        db.add_all([history1, history2, history3])
+        cc1 = models.ChiefComplaint(session_id=session1.id, complaint="Severe crushing chest pain radiating to left arm", duration="2 hours", severity="9/10")
+        hpi1 = models.HPI(session_id=session1.id, onset="2 hours ago", progression="Worsening", location="Chest radiating to left arm")
+        med1 = models.MedicationHistory(session_id=session1.id, drug_name="Telmisartan", dose="40mg", frequency="Once daily", status="current")
+        all1 = models.AllergyHistory(session_id=session1.id, allergen="Penicillin", reaction="Skin rash", type="drug")
+
+        cc2 = models.ChiefComplaint(session_id=session2.id, complaint="High fever and severe shortness of breath", duration="3 days", severity="8/10")
+        hpi2 = models.HPI(session_id=session2.id, onset="3 days ago", progression="Persistent high grade fever", associated_symptoms="Shortness of breath")
+        med2 = models.MedicationHistory(session_id=session2.id, drug_name="Paracetamol", dose="500mg", frequency="As needed", status="current")
+
+        cc3 = models.ChiefComplaint(session_id=session3.id, complaint="Mild headache and routine BP check", duration="1 day", severity="3/10")
+        med3 = models.MedicationHistory(session_id=session3.id, drug_name="Metformin", dose="500mg", frequency="Twice daily", status="current")
+
+        db.add_all([cc1, hpi1, med1, all1, cc2, hpi2, med2, cc3, med3])
         db.commit()
 
         # 5. Seed Documents & Extracted OCR Entities

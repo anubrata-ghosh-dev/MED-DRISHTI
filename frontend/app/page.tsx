@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { KioskWrapper } from '@/components/layout/KioskWrapper';
 import { BigButton } from '@/components/ui/BigButton';
 
-const intakeSteps = ['Language', 'Register', 'Consent', 'Intake'];
+const intakeSteps = ['Language', 'Register', 'Consent', 'Department', 'Intake'];
 
 export default function WelcomePage() {
   const router = useRouter();
