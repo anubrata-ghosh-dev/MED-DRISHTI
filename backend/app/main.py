@@ -46,10 +46,13 @@ gateway.register_provider(MockAIProvider())
 # --- ABDM Provider Initialization ---
 abdm_service = MockAbdmProvider()
 
-_cors_origins = os.environ.get("CORS_ORIGINS", "http://localhost:3000,http://localhost:3001").split(",")
+_cors_origins_raw = os.environ.get("CORS_ORIGINS", "")
+_cors_origins = [o.strip() for o in _cors_origins_raw.split(",") if o.strip()] or ["http://localhost:3000", "http://localhost:3001"]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",  # allow all Vercel preview & prod URLs
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
