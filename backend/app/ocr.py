@@ -286,8 +286,9 @@ def _extract_from_image(image_path_or_img) -> Dict[str, Any]:
     except Exception as e:
         logger.warning(f"EasyOCR extraction failed: {e}")
 
-    # Fallback: mock text for demo stability
-    if isinstance(image_path_or_img, str):
+    # Synthetic text is opt-in for local demos only. Never fabricate clinical
+    # content in a real upload path.
+    if os.getenv("OCR_DEMO_MODE", "").lower() == "true" and isinstance(image_path_or_img, str):
         return _get_mock_text(image_path_or_img)
     return {"text": "", "confidence": 0.0, "is_handwritten": False, "method": "none"}
 
@@ -411,6 +412,46 @@ def extract_entities_from_text(ocr_text: str) -> List[Dict[str, Any]]:
             })
 
     return entities
+
+
+def extract_prescription_medications(ocr_text: str) -> Dict[str, Any]:
+    """Extract conservative medication candidates for clinician verification."""
+    medications = []
+    warnings = []
+    for entity in extract_entities_from_text(ocr_text):
+        if entity.get("entity_type") != "medication":
+            continue
+        source_text = str(entity.get("source_text") or entity.get("entity_value") or "").strip()
+        match = re.match(
+            r"^(?P<name>[A-Za-z][A-Za-z .'-]*?)\s+(?P<strength>\d+(?:\.\d+)?\s*(?:mg|mcg|g|ml|iu))\b",
+            source_text,
+            re.IGNORECASE,
+        )
+        if not match:
+            warnings.append(f"Medication requires manual review: {source_text}")
+            medications.append({
+                "raw_text": source_text,
+                "name": source_text,
+                "strength": None,
+                "confidence": min(float(entity.get("confidence", 0.0)), 0.6),
+                "requires_review": True,
+            })
+            continue
+        confidence = float(entity.get("confidence", 0.0))
+        medications.append({
+            "raw_text": source_text,
+            "name": match.group("name").strip(),
+            "strength": re.sub(r"\s+", " ", match.group("strength").strip()),
+            "confidence": confidence,
+            "requires_review": confidence < 0.9,
+        })
+    if not medications:
+        warnings.append("No medication candidate was confidently detected.")
+    return {
+        "medications": medications,
+        "warnings": warnings,
+        "requires_clinician_review": True,
+    }
 
 
 # ============ Legacy compatibility wrapper ============

@@ -82,7 +82,7 @@ class AIGateway:
                 if result: return result
             except Exception as e:
                 logger.error(f"Provider {provider.provider_name} failed OCR: {e}")
-        return "[OCR Text Unavailable]"
+        raise RuntimeError("No OCR provider returned text for the uploaded document")
 
     def extract_entities(self, text: str) -> List[Dict[str, Any]]:
         for provider in self._providers:

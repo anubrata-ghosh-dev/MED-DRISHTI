@@ -126,7 +126,7 @@ class GoogleVisionProvider(AIProvider):
             payload = {
                 "requests": [{
                     "image": {"content": content},
-                    "features": [{"type": "TEXT_DETECTION"}]
+                    "features": [{"type": "DOCUMENT_TEXT_DETECTION"}]
                 }]
             }
 

@@ -75,3 +75,25 @@ def test_red_flag_evaluation():
     triggered = evaluate_red_flags("Patient experiencing severe chest pain radiating to left arm")
     assert len(triggered) > 0
     assert any(t["rule_id"] == "RF_CARDIAC_URGENT" for t in triggered)
+
+
+def test_prescription_extraction_requires_review():
+    from app.ocr import extract_prescription_medications
+
+    result = extract_prescription_medications(
+        "Rx:\n1. Telmisartan 40mg - Once daily\n2. Metformin 500mg - Twice daily"
+    )
+
+    assert [item["name"] for item in result["medications"]] == ["Telmisartan", "Metformin"]
+    assert [item["strength"] for item in result["medications"]] == ["40mg", "500mg"]
+    assert result["requires_clinician_review"] is True
+
+
+def test_ocr_does_not_fabricate_without_demo_mode(tmp_path, monkeypatch):
+    from app.ocr import extract_ocr_text
+
+    monkeypatch.delenv("OCR_DEMO_MODE", raising=False)
+    result = extract_ocr_text(str(tmp_path / "unreadable.png"))
+
+    assert result["text"] == ""
+    assert result["method"] == "none"
