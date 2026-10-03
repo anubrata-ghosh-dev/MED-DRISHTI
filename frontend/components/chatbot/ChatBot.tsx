@@ -10,38 +10,22 @@ interface Message {
   timestamp: Date;
 }
 
-// BCP-47 locale map for Web Speech API
 const SPEECH_LANG_MAP: Record<string, string> = {
-  en: 'en-IN',
-  hi: 'hi-IN',
-  bn: 'bn-IN',
-  ta: 'ta-IN',
-  te: 'te-IN',
-  ml: 'ml-IN',
-  pa: 'pa-IN',
-  mr: 'mr-IN',
-  gu: 'gu-IN',
-  kn: 'kn-IN',
+  en: 'en-IN', hi: 'hi-IN', bn: 'bn-IN', ta: 'ta-IN', te: 'te-IN', 
+  ml: 'ml-IN', pa: 'pa-IN', mr: 'mr-IN', gu: 'gu-IN', kn: 'kn-IN',
 };
 
-// Language display names for the voice indicator
 const LANG_NAMES: Record<string, string> = {
-  en: 'English', hi: 'हिन्दी', bn: 'বাংলা',
-  ta: 'தமிழ்', te: 'తెలుగు', ml: 'മലയാളം',
-  pa: 'ਪੰਜਾਬੀ', mr: 'मराठी', gu: 'ગુજરાતી', kn: 'ಕನ್ನಡ',
+  en: 'English', hi: 'हिन्दी', bn: 'বাংলা', ta: 'தமிழ்', te: 'తెలుగు', 
+  ml: 'മലയാളം', pa: 'ਪੰਜਾਬੀ', mr: 'मराठी', gu: 'ગુજરાતી', kn: 'ಕನ್ನಡ',
 };
 
 const LANG_PLACEHOLDERS: Record<string, string> = {
-  en: 'Ask me about your health...',
-  hi: 'अपनी सेहत के बारे में पूछें...',
-  bn: 'আপনার স্বাস্থ্য সম্পর্কে জিজ্ঞাসা করুন...',
-  ta: 'உங்கள் உடல்நலம் பற்றி கேளுங்கள்...',
-  te: 'మీ ఆరోగ్యం గురించి అడగండి...',
-  ml: 'നിങ്ങളുടെ ആരോഗ്യത്തെക്കുറിച്ച് ചോദിക്കൂ...',
-  pa: 'ਆਪਣੀ ਸਿਹਤ ਬਾਰੇ ਪੁੱਛੋ...',
-  mr: 'तुमच्या आरोग्याबद्दल विचारा...',
-  gu: 'તમારા સ્વાસ્થ્ય વિશે પૂછો...',
-  kn: 'ನಿಮ್ಮ ಆರೋಗ್ಯದ ಬಗ್ಗೆ ಕೇಳಿ...',
+  en: 'Ask me about your health...', hi: 'अपनी सेहत के बारे में पूछें...',
+  bn: 'আপনার স্বাস্থ্য সম্পর্কে জিজ্ঞাসা করুন...', ta: 'உங்கள் உடல்நலம் பற்றி கேளுங்கள்...',
+  te: 'మీ ఆరోగ్యం గురించి అడగండి...', ml: 'നിങ്ങളുടെ ആരോഗ്യത്തെക്കുറിച്ച് ചോദിക്കൂ...',
+  pa: 'ਆਪਣੀ ਸਿਹਤ ਬਾਰੇ ਪੁੱਛੋ...', mr: 'तुमच्या आरोग्याबद्दल विचारा...',
+  gu: 'તમારા સ્વાસ્થ્ય વિશે પૂછો...', kn: 'ನಿಮ್ಮ ಆರೋಗ್ಯದ ಬಗ್ಗೆ ಕೇಳಿ...',
 };
 
 const VOICE_LISTENING_TEXT: Record<string, string> = {
@@ -51,7 +35,7 @@ const VOICE_LISTENING_TEXT: Record<string, string> = {
 };
 
 const GREETING_MESSAGES: Record<string, string> = {
-  en: "👋 Hello! I'm Drishti Sahayak, your health assistant. I can help you understand your visit, explain recommendations, or answer general health questions. How can I help you today?",
+  en: "👋 Hello! I'm Drishti Sahayak, your health assistant. I can help you understand your visit, explain recommendations, or answer general health questions.",
   hi: "👋 नमस्ते! मैं दृष्टि सहायक हूँ, आपका स्वास्थ्य सहायक। मैं आपकी विज़िट को समझने, सिफारिशें समझाने या सामान्य स्वास्थ्य प्रश्नों का उत्तर देने में मदद कर सकता हूँ।",
   bn: "👋 নমস্কার! আমি দৃষ্টি সহায়ক, আপনার স্বাস্থ্য সহকারী। আমি আপনার ভিজিট বুঝতে, সুপারিশ ব্যাখ্যা করতে সাহায্য করতে পারি।",
   ta: "👋 வணக்கம்! நான் திருஷ்டி சஹாயக், உங்கள் சுகாதார உதவியாளர். உங்கள் வருகையை புரிந்துகொள்ள, பரிந்துரைகளை விளக்க உதவலாம்.",
@@ -75,7 +59,6 @@ export function ChatBot() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasGreeted, setHasGreeted] = useState(false);
 
-  // Voice state
   const [isRecording, setIsRecording] = useState(false);
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [interimText, setInterimText] = useState('');
@@ -84,21 +67,14 @@ export function ChatBot() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isLoading]);
+  }, [messages, isLoading, interimText]);
 
-  // Greet once when panel opens
   useEffect(() => {
     if (isOpen && !hasGreeted) {
       const greeting = GREETING_MESSAGES[language] || GREETING_MESSAGES['en'];
-      setMessages([{
-        id: generateId(),
-        role: 'assistant',
-        content: greeting,
-        timestamp: new Date(),
-      }]);
+      setMessages([{ id: generateId(), role: 'assistant', content: greeting, timestamp: new Date() }]);
       setHasGreeted(true);
     }
     if (isOpen) {
@@ -106,22 +82,16 @@ export function ChatBot() {
     }
   }, [isOpen, hasGreeted, language]);
 
-  // Cleanup recognition on unmount
   useEffect(() => {
-    return () => {
-      recognitionRef.current?.abort();
-    };
+    return () => { recognitionRef.current?.abort(); };
   }, []);
 
-  // ─── Voice Input ───────────────────────────────────────────────
   const startVoiceInput = useCallback(() => {
     setVoiceError(null);
-
-    const SpeechRecognitionAPI: any =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognitionAPI) {
-      setVoiceError('Voice input not supported in this browser. Please use Chrome or Edge.');
+      setVoiceError('Voice input not supported in this browser.');
       return;
     }
 
@@ -134,27 +104,17 @@ export function ChatBot() {
 
     const recognition = new SpeechRecognitionAPI();
     recognitionRef.current = recognition;
-
     recognition.lang = SPEECH_LANG_MAP[language] || 'en-IN';
     recognition.continuous = false;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
-    recognition.onstart = () => {
-      setIsRecording(true);
-      setInterimText('');
-    };
-
+    recognition.onstart = () => { setIsRecording(true); setInterimText(''); };
     recognition.onresult = (event: any) => {
-      let interim = '';
-      let final = '';
+      let interim = '', final = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          final += transcript;
-        } else {
-          interim += transcript;
-        }
+        if (event.results[i].isFinal) final += event.results[i][0].transcript;
+        else interim += event.results[i][0].transcript;
       }
       if (interim) setInterimText(interim);
       if (final) {
@@ -162,53 +122,31 @@ export function ChatBot() {
         setInterimText('');
       }
     };
-
-    recognition.onerror = (event: any) => {
-      console.error('[Voice] Error:', event.error);
-      if (event.error === 'not-allowed') {
-        setVoiceError('Microphone access denied. Please allow microphone in your browser settings.');
-      } else if (event.error === 'no-speech') {
-        setVoiceError('No speech detected. Please try again.');
-      } else {
-        setVoiceError('Voice recognition failed. Please type your message.');
-      }
-      setIsRecording(false);
-      setInterimText('');
+    recognition.onerror = (e: any) => {
+      setVoiceError(e.error === 'not-allowed' ? 'Mic access denied.' : 'Voice recognition failed.');
+      setIsRecording(false); setInterimText('');
     };
-
-    recognition.onend = () => {
-      setIsRecording(false);
-      setInterimText('');
-    };
-
+    recognition.onend = () => { setIsRecording(false); setInterimText(''); };
     recognition.start();
   }, [isRecording, language]);
 
-  // ─── Send Message ─────────────────────────────────────────────
   const sendMessage = useCallback(async () => {
     const text = inputValue.trim();
     if (!text || isLoading) return;
 
-    // Stop any active recording
     if (isRecording) {
       recognitionRef.current?.stop();
       setIsRecording(false);
     }
 
-    const userMessage: Message = {
-      id: generateId(),
-      role: 'user',
-      content: text,
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
+    const userMsg: Message = { id: generateId(), role: 'user', content: text, timestamp: new Date() };
+    setMessages((prev) => [...prev, userMsg]);
     setInputValue('');
     setVoiceError(null);
     setIsLoading(true);
 
     try {
-      const history = [...messages, userMessage]
+      const history = [...messages, userMsg]
         .filter(m => m.role === 'user' || (m.role === 'assistant' && messages.indexOf(m) > 0))
         .map(m => ({ role: m.role, content: m.content }));
 
@@ -219,18 +157,15 @@ export function ChatBot() {
       });
 
       const data = await res.json();
-
       setMessages((prev) => [...prev, {
-        id: generateId(),
-        role: 'assistant',
-        content: data.reply || 'Sorry, I could not get a response. Please try again.',
+        id: generateId(), role: 'assistant',
+        content: data.reply || 'Sorry, I could not get a response.',
         timestamp: new Date(),
       }]);
     } catch {
       setMessages((prev) => [...prev, {
-        id: generateId(),
-        role: 'assistant',
-        content: '⚠️ Connection error. Please check that the backend server is running.',
+        id: generateId(), role: 'assistant',
+        content: '⚠️ Connection error. Please check your internet or server.',
         timestamp: new Date(),
       }]);
     } finally {
@@ -239,16 +174,10 @@ export function ChatBot() {
   }, [inputValue, isLoading, isRecording, messages, language]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   };
 
-  const placeholder = isRecording
-    ? (VOICE_LISTENING_TEXT[language] || 'Listening...')
-    : (LANG_PLACEHOLDERS[language] || LANG_PLACEHOLDERS['en']);
-
+  const placeholder = isRecording ? (VOICE_LISTENING_TEXT[language] || 'Listening...') : (LANG_PLACEHOLDERS[language] || LANG_PLACEHOLDERS['en']);
   const displayValue = isRecording && interimText ? interimText : inputValue;
 
   return (
@@ -256,291 +185,124 @@ export function ChatBot() {
       {/* Floating Toggle Button */}
       <button
         onClick={() => setIsOpen((o) => !o)}
-        aria-label="Open health assistant chatbot"
-        style={{
-          position: 'fixed', bottom: '1.5rem', right: '1.5rem', zIndex: 9999,
-          width: '3.75rem', height: '3.75rem', borderRadius: '50%',
-          background: 'linear-gradient(135deg, #1f6f63 0%, #2ea89a 100%)',
-          border: 'none', cursor: 'pointer', display: 'flex',
-          alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem',
-          boxShadow: '0 8px 32px rgba(31,111,99,0.38), 0 2px 8px rgba(0,0,0,0.15)',
-          transition: 'transform 0.2s ease', outline: 'none',
-        }}
-        onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')}
-        onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+        className={`fixed z-[9999] bottom-6 right-6 w-14 h-14 rounded-full shadow-lg shadow-teal-900/20 dark:shadow-teal-900/40 flex items-center justify-center text-2xl transition-all duration-300 hover:scale-105 active:scale-95 ${isOpen ? 'bg-slate-800 dark:bg-slate-700 text-white' : 'bg-gradient-to-br from-teal-600 to-teal-500 text-white'}`}
       >
         {isOpen ? '✕' : '💬'}
       </button>
 
-      {/* Chat Panel */}
-      {isOpen && (
-        <div style={{
-          position: 'fixed', bottom: '6rem', right: '1.5rem', zIndex: 9998,
-          width: 'min(420px, calc(100vw - 2rem))',
-          height: 'min(580px, calc(100vh - 8rem))',
-          borderRadius: '1.5rem',
-          background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(24px)',
-          boxShadow: '0 24px 64px rgba(31,111,99,0.18), 0 4px 16px rgba(0,0,0,0.10)',
-          border: '1px solid rgba(31,111,99,0.15)',
-          display: 'flex', flexDirection: 'column', overflow: 'hidden',
-          animation: 'chatbot-slide-up 0.28s cubic-bezier(0.34,1.56,0.64,1)',
-        }}>
-
-          {/* Header */}
-          <div style={{
-            background: 'linear-gradient(135deg, #1f6f63 0%, #2ea89a 100%)',
-            padding: '1rem 1.25rem', display: 'flex', alignItems: 'center',
-            gap: '0.75rem', flexShrink: 0,
-          }}>
-            <div style={{
-              width: '2.5rem', height: '2.5rem', borderRadius: '50%',
-              background: 'rgba(255,255,255,0.2)', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0,
-            }}>🩺</div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ margin: 0, color: '#fff', fontWeight: 700, fontSize: '0.95rem' }}>
-                Drishti Sahayak
-              </p>
-              <p style={{ margin: 0, color: 'rgba(255,255,255,0.78)', fontSize: '0.72rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                AI Health Assistant
-              </p>
-            </div>
-            {/* Language badge */}
-            <div style={{
-              background: 'rgba(255,255,255,0.18)', borderRadius: '1rem',
-              padding: '0.2rem 0.6rem', fontSize: '0.7rem', color: '#fff',
-              fontWeight: 600, letterSpacing: '0.03em', flexShrink: 0,
-              display: 'flex', alignItems: 'center', gap: '0.3rem',
-            }}>
-              🌐 {LANG_NAMES[language] || 'English'}
-            </div>
-            <div style={{
-              width: '0.6rem', height: '0.6rem', borderRadius: '50%',
-              background: '#4ade80', boxShadow: '0 0 0 3px rgba(74,222,128,0.3)', flexShrink: 0,
-            }} />
+      {/* Chat Panel - Full width bottom sheet on mobile, floating panel on desktop */}
+      <div className={`fixed z-[9998] flex flex-col overflow-hidden transition-all duration-300 ease-out border border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl
+        ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-[120%] opacity-0 pointer-events-none'}
+        bottom-0 left-0 right-0 h-[85dvh] rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.5)]
+        md:bottom-24 md:right-6 md:left-auto md:w-[400px] md:h-[600px] md:rounded-2xl md:shadow-2xl`}
+      >
+        {/* Header */}
+        <div className="bg-gradient-to-br from-teal-700 to-teal-600 p-4 flex items-center gap-3 shrink-0 rounded-t-3xl md:rounded-t-2xl">
+          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl shrink-0">🩺</div>
+          <div className="flex-1 min-w-0">
+            <h3 className="m-0 text-white font-semibold text-base">Drishti Sahayak</h3>
+            <p className="m-0 text-white/80 text-xs uppercase tracking-wider">AI Health Assistant</p>
           </div>
-
-          {/* Messages */}
-          <div style={{
-            flex: 1, overflowY: 'auto', padding: '1rem',
-            display: 'flex', flexDirection: 'column', gap: '0.75rem',
-          }}>
-            {messages.map((msg) => (
-              <div key={msg.id} style={{
-                display: 'flex',
-                justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                alignItems: 'flex-end', gap: '0.5rem',
-              }}>
-                {msg.role === 'assistant' && (
-                  <div style={{
-                    width: '1.75rem', height: '1.75rem', borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #1f6f63, #2ea89a)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '0.8rem', flexShrink: 0,
-                  }}>🩺</div>
-                )}
-                <div style={{
-                  maxWidth: '80%', padding: '0.65rem 0.9rem',
-                  borderRadius: msg.role === 'user'
-                    ? '1.2rem 1.2rem 0.25rem 1.2rem'
-                    : '1.2rem 1.2rem 1.2rem 0.25rem',
-                  background: msg.role === 'user'
-                    ? 'linear-gradient(135deg, #1f6f63, #2ea89a)'
-                    : 'rgba(241,245,249,0.9)',
-                  color: msg.role === 'user' ? '#fff' : '#1e293b',
-                  fontSize: '0.875rem', lineHeight: 1.55,
-                  boxShadow: msg.role === 'user'
-                    ? '0 2px 12px rgba(31,111,99,0.22)'
-                    : '0 1px 4px rgba(0,0,0,0.06)',
-                  border: msg.role === 'assistant' ? '1px solid rgba(31,111,99,0.1)' : 'none',
-                  whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-                }}>
-                  {msg.content}
-                </div>
-              </div>
-            ))}
-
-            {/* Typing indicator */}
-            {isLoading && (
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '0.5rem' }}>
-                <div style={{
-                  width: '1.75rem', height: '1.75rem', borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #1f6f63, #2ea89a)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '0.8rem', flexShrink: 0,
-                }}>🩺</div>
-                <div style={{
-                  padding: '0.75rem 1rem', borderRadius: '1.2rem 1.2rem 1.2rem 0.25rem',
-                  background: 'rgba(241,245,249,0.9)', border: '1px solid rgba(31,111,99,0.1)',
-                  display: 'flex', gap: '0.3rem', alignItems: 'center',
-                }}>
-                  {[0, 1, 2].map((i) => (
-                    <div key={i} style={{
-                      width: '0.45rem', height: '0.45rem', borderRadius: '50%',
-                      background: '#2ea89a',
-                      animation: `chatbot-dot-bounce 1.2s ease-in-out ${i * 0.2}s infinite`,
-                    }} />
-                  ))}
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Voice recording banner */}
-          {isRecording && (
-            <div style={{
-              margin: '0 0.75rem', padding: '0.55rem 0.9rem',
-              background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
-              borderRadius: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.6rem',
-              fontSize: '0.8rem', color: '#dc2626', flexShrink: 0,
-            }}>
-              <div style={{
-                width: '0.55rem', height: '0.55rem', borderRadius: '50%',
-                background: '#ef4444', animation: 'chatbot-pulse 1s ease-in-out infinite',
-                flexShrink: 0,
-              }} />
-              <span style={{ fontWeight: 600 }}>
-                {VOICE_LISTENING_TEXT[language] || 'Listening...'}
-              </span>
-              <span style={{ color: '#94a3b8', fontSize: '0.72rem', marginLeft: 'auto' }}>
-                {LANG_NAMES[language] || 'English'} · Tap 🎤 to stop
-              </span>
-            </div>
-          )}
-
-          {/* Voice error banner */}
-          {voiceError && !isRecording && (
-            <div style={{
-              margin: '0 0.75rem', padding: '0.5rem 0.9rem',
-              background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.3)',
-              borderRadius: '0.75rem', fontSize: '0.75rem', color: '#92400e',
-              flexShrink: 0, display: 'flex', alignItems: 'center', gap: '0.5rem',
-            }}>
-              <span>⚠️</span>
-              <span>{voiceError}</span>
-              <button
-                onClick={() => setVoiceError(null)}
-                style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.9rem', color: '#92400e' }}
-              >✕</button>
-            </div>
-          )}
-
-          {/* Input Bar */}
-          <div style={{
-            padding: '0.75rem 1rem',
-            borderTop: '1px solid rgba(31,111,99,0.1)',
-            background: 'rgba(248,250,252,0.9)',
-            display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0,
-          }}>
-            {/* Mic Button */}
-            <button
-              onClick={startVoiceInput}
-              disabled={isLoading}
-              aria-label={isRecording ? 'Stop recording' : 'Start voice input'}
-              title={isRecording ? 'Click to stop recording' : `Speak in ${LANG_NAMES[language] || 'English'}`}
-              style={{
-                width: '2.5rem', height: '2.5rem', borderRadius: '0.75rem',
-                background: isRecording
-                  ? 'linear-gradient(135deg, #ef4444, #dc2626)'
-                  : 'rgba(31,111,99,0.1)',
-                border: isRecording
-                  ? '2px solid rgba(239,68,68,0.4)'
-                  : '2px solid rgba(31,111,99,0.15)',
-                cursor: isLoading ? 'not-allowed' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '1.1rem', transition: 'all 0.18s',
-                flexShrink: 0,
-                animation: isRecording ? 'chatbot-pulse 1.5s ease-in-out infinite' : 'none',
-                opacity: isLoading ? 0.5 : 1,
-              }}
-              onMouseEnter={e => {
-                if (!isLoading && !isRecording) {
-                  e.currentTarget.style.background = 'rgba(31,111,99,0.18)';
-                }
-              }}
-              onMouseLeave={e => {
-                if (!isRecording) e.currentTarget.style.background = 'rgba(31,111,99,0.1)';
-              }}
-            >
-              {isRecording ? '⏹' : '🎤'}
-            </button>
-
-            {/* Text Input */}
-            <input
-              ref={inputRef}
-              type="text"
-              value={displayValue}
-              onChange={(e) => {
-                if (!isRecording) setInputValue(e.target.value);
-              }}
-              onKeyDown={handleKeyDown}
-              placeholder={placeholder}
-              disabled={isLoading}
-              readOnly={isRecording}
-              style={{
-                flex: 1, border: '1.5px solid rgba(31,111,99,0.2)',
-                borderRadius: '0.875rem', padding: '0.6rem 0.9rem',
-                fontSize: '0.875rem', outline: 'none', background: isRecording ? 'rgba(239,68,68,0.04)' : '#fff',
-                color: isRecording ? '#dc2626' : '#1e293b',
-                transition: 'border-color 0.18s, background 0.18s',
-                fontStyle: isRecording && interimText ? 'italic' : 'normal',
-              }}
-              onFocus={e => !isRecording && (e.target.style.borderColor = '#1f6f63')}
-              onBlur={e => !isRecording && (e.target.style.borderColor = 'rgba(31,111,99,0.2)')}
-            />
-
-            {/* Send Button */}
-            <button
-              onClick={sendMessage}
-              disabled={isLoading || (!inputValue.trim() && !interimText)}
-              aria-label="Send message"
-              style={{
-                width: '2.5rem', height: '2.5rem', borderRadius: '0.75rem',
-                background: (inputValue.trim() || interimText) && !isLoading
-                  ? 'linear-gradient(135deg, #1f6f63 0%, #2ea89a 100%)'
-                  : 'rgba(203,213,225,1)',
-                border: 'none',
-                cursor: (inputValue.trim() || interimText) && !isLoading ? 'pointer' : 'not-allowed',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '1rem', transition: 'background 0.18s, transform 0.15s',
-                flexShrink: 0, color: '#fff',
-              }}
-              onMouseEnter={e => {
-                if (inputValue.trim() && !isLoading) e.currentTarget.style.transform = 'scale(1.08)';
-              }}
-              onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-            >
-              ➤
-            </button>
-          </div>
-
-          {/* Disclaimer */}
-          <div style={{
-            padding: '0.4rem 1rem 0.6rem', textAlign: 'center',
-            fontSize: '0.65rem', color: '#94a3b8',
-            background: 'rgba(248,250,252,0.9)',
-            borderTop: '1px solid rgba(241,245,249,1)', lineHeight: 1.4,
-          }}>
-            For emergencies, call 108. AI advice is not a substitute for professional medical care.
+          <div className="bg-white/20 rounded-full px-2.5 py-1 text-xs text-white font-medium flex items-center gap-1.5 shrink-0">
+            🌐 {LANG_NAMES[language] || 'English'}
           </div>
         </div>
-      )}
 
-      <style>{`
-        @keyframes chatbot-slide-up {
-          from { opacity: 0; transform: translateY(24px) scale(0.96); }
-          to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes chatbot-dot-bounce {
-          0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
-          40%            { transform: translateY(-5px); opacity: 1; }
-        }
-        @keyframes chatbot-pulse {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.55; }
-        }
-      `}</style>
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
+          {messages.map((msg) => (
+            <div key={msg.id} className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              {msg.role === 'assistant' && (
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-600 to-teal-500 flex items-center justify-center text-xs shrink-0 shadow-sm text-white">🩺</div>
+              )}
+              <div className={`max-w-[85%] px-4 py-2.5 text-[0.9rem] leading-relaxed shadow-sm break-words whitespace-pre-wrap ${
+                msg.role === 'user' 
+                  ? 'rounded-2xl rounded-br-sm bg-gradient-to-br from-teal-600 to-teal-500 text-white' 
+                  : 'rounded-2xl rounded-bl-sm bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700'
+              }`}>
+                {msg.content}
+              </div>
+            </div>
+          ))}
+
+          {/* Typing Indicator */}
+          {isLoading && (
+            <div className="flex items-end gap-2">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-600 to-teal-500 flex items-center justify-center text-xs shrink-0 text-white">🩺</div>
+              <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex gap-1 items-center">
+                <div className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Voice Banners */}
+        {isRecording && (
+          <div className="mx-3 mb-2 p-2 px-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-2 text-xs text-red-600 dark:text-red-400">
+            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            <span className="font-semibold">{VOICE_LISTENING_TEXT[language] || 'Listening...'}</span>
+            <span className="ml-auto opacity-70">Tap 🎤 to stop</span>
+          </div>
+        )}
+        {voiceError && !isRecording && (
+          <div className="mx-3 mb-2 p-2 px-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl flex items-center gap-2 text-xs text-amber-700 dark:text-amber-400">
+            <span>⚠️</span>
+            <span className="flex-1">{voiceError}</span>
+            <button onClick={() => setVoiceError(null)} className="opacity-70 hover:opacity-100">✕</button>
+          </div>
+        )}
+
+        {/* Input Bar */}
+        <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex gap-2 items-center">
+          <button
+            onClick={startVoiceInput}
+            disabled={isLoading}
+            className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg transition-all shrink-0 ${
+              isRecording 
+                ? 'bg-red-500 text-white shadow-lg shadow-red-500/30 animate-pulse' 
+                : 'bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-900/50'
+            } disabled:opacity-50`}
+          >
+            {isRecording ? '⏹' : '🎤'}
+          </button>
+
+          <input
+            ref={inputRef}
+            type="text"
+            value={displayValue}
+            onChange={(e) => !isRecording && setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            disabled={isLoading}
+            readOnly={isRecording}
+            className={`flex-1 min-w-0 border rounded-xl px-3 py-2.5 text-sm outline-none transition-all ${
+              isRecording 
+                ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 italic'
+                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:border-teal-500 dark:focus:border-teal-500'
+            } disabled:opacity-50`}
+          />
+
+          <button
+            onClick={sendMessage}
+            disabled={isLoading || (!inputValue.trim() && !interimText)}
+            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 text-white ${
+              (inputValue.trim() || interimText) && !isLoading
+                ? 'bg-gradient-to-br from-teal-600 to-teal-500 hover:scale-105 shadow-md shadow-teal-600/20'
+                : 'bg-slate-300 dark:bg-slate-700 cursor-not-allowed'
+            }`}
+          >
+            ➤
+          </button>
+        </div>
+
+        {/* Disclaimer */}
+        <div className="px-4 py-2 text-center text-[10px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50">
+          For emergencies, call 108. AI advice is not a substitute for professional medical care.
+        </div>
+      </div>
     </>
   );
 }
