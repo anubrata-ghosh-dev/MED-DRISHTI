@@ -27,6 +27,13 @@ class MedicalRecordTypeEnum(str, Enum):
     IMAGING = "imaging"
     OTHER = "other"
 
+class AttentionStatusEnum(str, Enum):
+    ROUTINE = "routine"
+    NEEDS_ATTENTION = "needs_attention"
+    PRIORITY = "priority"
+    CRITICAL = "critical"
+    FOLLOW_UP = "follow_up"
+
 # Auth Schemas
 class UserRegister(BaseModel):
     email: EmailStr
@@ -111,22 +118,51 @@ class ClinicalSessionResponse(BaseModel):
     status: str
     started_at: datetime
     completed_at: Optional[datetime] = None
+    attention_status: Optional[str] = "routine"
+    model_config = ConfigDict(from_attributes=True)
+
+# Patient Statement Schemas (original language preservation)
+class PatientStatementCreate(BaseModel):
+    original_text: str
+    original_language: str = "en"
+    translated_text: Optional[str] = None
+    structured_extraction: Optional[Any] = None
+    confidence: Optional[float] = None
+    source: str = "text"  # 'text' | 'voice'
+
+class PatientStatementResponse(BaseModel):
+    id: int
+    session_id: int
+    original_text: str
+    original_language: str
+    translated_text: Optional[str] = None
+    structured_extraction: Optional[str] = None
+    confidence: Optional[float] = None
+    source: str
+    created_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
 # Structured Clinical History Schemas
-
 class ChiefComplaintCreate(BaseModel):
     complaint: str
+    original_text: Optional[str] = None
+    original_language: Optional[str] = None
     duration: Optional[str] = None
     severity: Optional[str] = None
     onset: Optional[str] = None
+    source: str = "patient_entered"
+    ai_confidence: Optional[float] = None
 
 class ChiefComplaintResponse(BaseModel):
     id: int
     complaint: str
+    original_text: Optional[str] = None
+    original_language: Optional[str] = None
     duration: Optional[str] = None
     severity: Optional[str] = None
     onset: Optional[str] = None
+    source: str = "patient_entered"
+    ai_confidence: Optional[float] = None
     created_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
@@ -140,6 +176,7 @@ class HPICreate(BaseModel):
     aggravating_factors: Optional[str] = None
     relieving_factors: Optional[str] = None
     associated_symptoms: Optional[str] = None
+    source: str = "patient_entered"
 
 class HPIResponse(BaseModel):
     id: int
@@ -152,6 +189,7 @@ class HPIResponse(BaseModel):
     aggravating_factors: Optional[str] = None
     relieving_factors: Optional[str] = None
     associated_symptoms: Optional[str] = None
+    source: str = "patient_entered"
     created_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
@@ -192,6 +230,9 @@ class MedicationHistoryCreate(BaseModel):
     route: Optional[str] = None
     duration: Optional[str] = None
     status: Optional[str] = None
+    source: str = "patient_entered"
+    ai_confidence: Optional[float] = None
+    requires_verification: bool = False
 
 class MedicationHistoryResponse(BaseModel):
     id: int
@@ -201,6 +242,9 @@ class MedicationHistoryResponse(BaseModel):
     route: Optional[str] = None
     duration: Optional[str] = None
     status: Optional[str] = None
+    source: str = "patient_entered"
+    ai_confidence: Optional[float] = None
+    requires_verification: bool = False
     created_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
@@ -294,6 +338,141 @@ class StructuredClinicalHistoryResponse(BaseModel):
     ayush_histories: List[AyushHistoryResponse] = []
     model_config = ConfigDict(from_attributes=True)
 
+# ============ Ayurvedic Assessment Schemas ============
+
+class PrakritiAssessmentCreate(BaseModel):
+    vata_score: Optional[int] = None   # 0-100
+    pitta_score: Optional[int] = None
+    kapha_score: Optional[int] = None
+    dominant_dosha: Optional[str] = None
+    secondary_dosha: Optional[str] = None
+    assessment_method: str = "physician"  # questionnaire | physician | ai_suggested
+    questionnaire_responses: Optional[Any] = None
+    physician_notes: Optional[str] = None
+    physician_confirmed: bool = False
+
+class PrakritiAssessmentResponse(BaseModel):
+    id: int
+    session_id: int
+    vata_score: Optional[int] = None
+    pitta_score: Optional[int] = None
+    kapha_score: Optional[int] = None
+    dominant_dosha: Optional[str] = None
+    secondary_dosha: Optional[str] = None
+    assessment_method: str
+    questionnaire_responses: Optional[str] = None
+    physician_notes: Optional[str] = None
+    physician_confirmed: bool
+    assessed_by: Optional[int] = None
+    assessed_at: datetime
+    updated_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+class VikritAssessmentCreate(BaseModel):
+    vata_imbalance: Optional[str] = None   # normal | slightly_elevated | elevated | high
+    pitta_imbalance: Optional[str] = None
+    kapha_imbalance: Optional[str] = None
+    primary_imbalance: Optional[str] = None
+    agni_status: Optional[str] = None       # sama | vishama | tikshna | manda
+    ama_presence: Optional[str] = None      # absent | mild | moderate | severe
+    clinical_notes: Optional[str] = None
+    physician_confirmed: bool = False
+
+class VikritAssessmentResponse(BaseModel):
+    id: int
+    session_id: int
+    vata_imbalance: Optional[str] = None
+    pitta_imbalance: Optional[str] = None
+    kapha_imbalance: Optional[str] = None
+    primary_imbalance: Optional[str] = None
+    agni_status: Optional[str] = None
+    ama_presence: Optional[str] = None
+    clinical_notes: Optional[str] = None
+    physician_confirmed: bool
+    assessed_by: Optional[int] = None
+    assessed_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+class DashavidhaParikshhaCreate(BaseModel):
+    prakriti_notes: Optional[str] = None
+    vikriti_notes: Optional[str] = None
+    sara: Optional[str] = None
+    sara_notes: Optional[str] = None
+    samhanana: Optional[str] = None
+    samhanana_notes: Optional[str] = None
+    pramana: Optional[str] = None
+    pramana_notes: Optional[str] = None
+    satmya: Optional[str] = None
+    satmya_notes: Optional[str] = None
+    satva: Optional[str] = None  # pravara | madhyama | avara
+    satva_notes: Optional[str] = None
+    ahara_shakti: Optional[str] = None
+    ahara_shakti_notes: Optional[str] = None
+    vyayama_shakti: Optional[str] = None
+    vyayama_shakti_notes: Optional[str] = None
+    vaya: Optional[str] = None   # bala | madhyama | vriddha
+    vaya_notes: Optional[str] = None
+    additional_notes: Optional[str] = None
+    physician_confirmed: bool = False
+
+class DashavidhaParikshhaResponse(BaseModel):
+    id: int
+    session_id: int
+    prakriti_notes: Optional[str] = None
+    vikriti_notes: Optional[str] = None
+    sara: Optional[str] = None
+    sara_notes: Optional[str] = None
+    samhanana: Optional[str] = None
+    samhanana_notes: Optional[str] = None
+    pramana: Optional[str] = None
+    pramana_notes: Optional[str] = None
+    satmya: Optional[str] = None
+    satmya_notes: Optional[str] = None
+    satva: Optional[str] = None
+    satva_notes: Optional[str] = None
+    ahara_shakti: Optional[str] = None
+    ahara_shakti_notes: Optional[str] = None
+    vyayama_shakti: Optional[str] = None
+    vyayama_shakti_notes: Optional[str] = None
+    vaya: Optional[str] = None
+    vaya_notes: Optional[str] = None
+    additional_notes: Optional[str] = None
+    physician_confirmed: bool
+    assessed_by: Optional[int] = None
+    assessed_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+# ============ Doctor Notes Schemas ============
+class DoctorNoteCreate(BaseModel):
+    content: str
+    note_type: str = "general"  # general | assessment | plan | followup | ayurvedic
+
+class DoctorNoteResponse(BaseModel):
+    id: int
+    session_id: int
+    patient_id: int
+    content: str
+    note_type: str
+    created_by: Optional[int] = None
+    created_at: datetime
+    updated_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+# ============ Patient Attention Status Schemas ============
+class AttentionStatusUpdate(BaseModel):
+    attention_status: AttentionStatusEnum
+    reason: Optional[str] = None
+    note: Optional[str] = None
+
+class AttentionStatusResponse(BaseModel):
+    session_id: int
+    attention_status: str
+    attention_reason: Optional[str] = None
+    attention_note: Optional[str] = None
+    attention_changed_by: Optional[int] = None
+    attention_changed_at: Optional[datetime] = None
+    model_config = ConfigDict(from_attributes=True)
+
 # Structured Clinical Entity Schemas
 class ClinicalEntityCreate(BaseModel):
     entity_type: str
@@ -323,18 +502,20 @@ class DocumentResponse(BaseModel):
     id: int
     session_id: int
     file_name: str
-    file_type: str
-    s3_key: str
+    file_type: Optional[str] = None
+    s3_key: Optional[str] = None
     ocr_text: Optional[str] = None
     upload_at: datetime
+    processing_status: str = "pending"
+    ocr_confidence: Optional[float] = None
     model_config = ConfigDict(from_attributes=True)
 
 # Extracted Entity Schemas (Legacy)
 class ExtractedEntityResponse(BaseModel):
     id: int
     document_id: int
-    entity_type: str
-    entity_value: str
+    entity_type: Optional[str] = None
+    entity_value: Optional[str] = None
     confidence: float
     source_text: Optional[str] = None
     extracted_at: datetime
@@ -344,8 +525,8 @@ class ExtractedEntityResponse(BaseModel):
 class RedFlagResponse(BaseModel):
     id: int
     session_id: int
-    rule_id: str
-    description: str
+    rule_id: Optional[str] = None
+    description: Optional[str] = None
     severity: RedFlagSeverityEnum
     triggered_at: datetime
     reviewed: bool
@@ -390,12 +571,13 @@ class DoctorQueueItemResponse(BaseModel):
     started_at: datetime
     completed_at: Optional[datetime] = None
     triage_status: str
+    attention_status: str = "routine"
     red_flags_count: int
     documents_count: int
     medical_records_count: int = 0
     model_config = ConfigDict(from_attributes=True)
 
-# Session Verification Request Schema
+# Session Verification Request Schema — physician edits to structured history
 class SessionVerifyRequest(BaseModel):
     chief_complaints: Optional[List[ChiefComplaintCreate]] = None
     hpi: Optional[List[HPICreate]] = None
@@ -432,6 +614,7 @@ class MedicalRecordResponse(BaseModel):
     file_type: Optional[str] = None
     ocr_text: Optional[str] = None
     uploaded_at: datetime
+    processing_status: str = "pending"
     model_config = ConfigDict(from_attributes=True)
 
 # Clinical Summary Schema

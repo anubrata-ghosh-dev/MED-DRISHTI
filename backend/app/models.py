@@ -31,6 +31,13 @@ class MedicalRecordTypeEnum(str, enum.Enum):
     IMAGING = "imaging"
     OTHER = "other"
 
+class AttentionStatusEnum(str, enum.Enum):
+    ROUTINE = "routine"
+    NEEDS_ATTENTION = "needs_attention"
+    PRIORITY = "priority"
+    CRITICAL = "critical"
+    FOLLOW_UP = "follow_up"
+
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
@@ -81,6 +88,14 @@ class ClinicalSession(Base):
     status = Column(String, default="active")
     started_at = Column(DateTime, default=datetime.utcnow)
     completed_at = Column(DateTime, nullable=True)
+
+    # Patient attention/priority status (physician-controlled)
+    attention_status = Column(SQLEnum(AttentionStatusEnum), default=AttentionStatusEnum.ROUTINE)
+    attention_reason = Column(Text, nullable=True)
+    attention_note = Column(Text, nullable=True)
+    attention_changed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    attention_changed_at = Column(DateTime, nullable=True)
+
     patient = relationship("Patient", back_populates="sessions")
 
     # Structured Clinical History Relationships
@@ -95,19 +110,50 @@ class ClinicalSession(Base):
     review_of_systems = relationship("ReviewOfSystems", back_populates="session", cascade="all, delete-orphan")
     ayush_histories = relationship("AyushHistory", back_populates="session", cascade="all, delete-orphan")
 
+    # Patient statements (original language preservation)
+    patient_statements = relationship("PatientStatement", back_populates="session", cascade="all, delete-orphan")
+
+    # Ayurvedic assessments
+    prakriti_assessments = relationship("PrakritiAssessment", back_populates="session", cascade="all, delete-orphan")
+    vikriti_assessments = relationship("VikritAssessment", back_populates="session", cascade="all, delete-orphan")
+    dashavidha_pariksha = relationship("DashavidhaPariksha", back_populates="session", cascade="all, delete-orphan")
+
+    # Doctor notes
+    doctor_notes = relationship("DoctorNote", back_populates="session", cascade="all, delete-orphan")
+
     documents = relationship("Document", back_populates="session")
     red_flags = relationship("RedFlag", back_populates="session")
     medical_records = relationship("MedicalRecord", back_populates="session")
     clinical_entities = relationship("ClinicalEntity", back_populates="session")
+
+
+class PatientStatement(Base):
+    """Stores original patient voice/text statements with full provenance."""
+    __tablename__ = "patient_statements"
+    id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(Integer, ForeignKey("clinical_sessions.id"), nullable=False)
+    original_text = Column(Text, nullable=False)
+    original_language = Column(String, nullable=False, default="en")
+    translated_text = Column(Text, nullable=True)  # English translation if original is not English
+    structured_extraction = Column(Text, nullable=True)  # JSON of extracted symptoms/fields
+    confidence = Column(Float, nullable=True)
+    source = Column(String, default="text")  # 'text' | 'voice'
+    created_at = Column(DateTime, default=datetime.utcnow)
+    session = relationship("ClinicalSession", back_populates="patient_statements")
+
 
 class ChiefComplaint(Base):
     __tablename__ = "chief_complaints"
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(Integer, ForeignKey("clinical_sessions.id"), nullable=False)
     complaint = Column(Text, nullable=False)
+    original_text = Column(Text, nullable=True)        # Patient's original words (possibly non-English)
+    original_language = Column(String, nullable=True)  # e.g. 'bn', 'hi', 'ta'
     duration = Column(String, nullable=True)
     severity = Column(String, nullable=True)
     onset = Column(String, nullable=True)
+    source = Column(String, default="patient_entered")  # patient_entered | ai_extracted | physician_entered
+    ai_confidence = Column(Float, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     session = relationship("ClinicalSession", back_populates="chief_complaints")
 
@@ -124,6 +170,7 @@ class HPI(Base):
     aggravating_factors = Column(Text, nullable=True)
     relieving_factors = Column(Text, nullable=True)
     associated_symptoms = Column(Text, nullable=True)
+    source = Column(String, default="patient_entered")  # patient_entered | ai_extracted | physician_entered
     created_at = Column(DateTime, default=datetime.utcnow)
     session = relationship("ClinicalSession", back_populates="hpi")
 
@@ -159,6 +206,9 @@ class MedicationHistory(Base):
     route = Column(String, nullable=True)
     duration = Column(String, nullable=True)
     status = Column(String, nullable=True) # current, discontinued
+    source = Column(String, default="patient_entered")  # patient_entered | ocr_extracted | physician_entered
+    ai_confidence = Column(Float, nullable=True)
+    requires_verification = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     session = relationship("ClinicalSession", back_populates="medication_histories")
 
@@ -206,11 +256,109 @@ class AyushHistory(Base):
     __tablename__ = "ayush_histories"
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(Integer, ForeignKey("clinical_sessions.id"), nullable=False)
-    parameter = Column(String, nullable=False) # e.g., Prakriti, Vikriti, Sara
+    parameter = Column(String, nullable=False) # e.g., Prakriti, Vikriti, Sara, Agni
     value = Column(String, nullable=True)
     detail = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     session = relationship("ClinicalSession", back_populates="ayush_histories")
+
+
+# ============ Ayurvedic Assessment Models ============
+
+class PrakritiAssessment(Base):
+    """Structured Prakriti (individual constitution) assessment."""
+    __tablename__ = "prakriti_assessments"
+    id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(Integer, ForeignKey("clinical_sessions.id"), nullable=False)
+    vata_score = Column(Integer, nullable=True)    # 0-100 percentage
+    pitta_score = Column(Integer, nullable=True)
+    kapha_score = Column(Integer, nullable=True)
+    dominant_dosha = Column(String, nullable=True)   # vata | pitta | kapha | vata_pitta | etc.
+    secondary_dosha = Column(String, nullable=True)
+    assessment_method = Column(String, default="questionnaire")  # questionnaire | physician | ai_suggested
+    questionnaire_responses = Column(Text, nullable=True)  # JSON of Q&A
+    physician_notes = Column(Text, nullable=True)
+    physician_confirmed = Column(Boolean, default=False)
+    assessed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    assessed_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    session = relationship("ClinicalSession", back_populates="prakriti_assessments")
+
+
+class VikritAssessment(Base):
+    """Vikriti (current imbalance / disease state) assessment."""
+    __tablename__ = "vikriti_assessments"
+    id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(Integer, ForeignKey("clinical_sessions.id"), nullable=False)
+    vata_imbalance = Column(String, nullable=True)   # normal | slightly_elevated | elevated | high
+    pitta_imbalance = Column(String, nullable=True)
+    kapha_imbalance = Column(String, nullable=True)
+    primary_imbalance = Column(String, nullable=True)  # the most vitiated dosha
+    agni_status = Column(String, nullable=True)       # sama | vishama | tikshna | manda
+    ama_presence = Column(String, nullable=True)      # absent | mild | moderate | severe
+    clinical_notes = Column(Text, nullable=True)
+    physician_confirmed = Column(Boolean, default=False)
+    assessed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    assessed_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    session = relationship("ClinicalSession", back_populates="vikriti_assessments")
+
+
+class DashavidhaPariksha(Base):
+    """Dashavidha Pariksha — the 10-fold Ayurvedic clinical examination."""
+    __tablename__ = "dashavidha_pariksha"
+    id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(Integer, ForeignKey("clinical_sessions.id"), nullable=False)
+    # 1. Prakriti — individual constitution
+    prakriti_notes = Column(Text, nullable=True)
+    # 2. Vikriti — current disease state
+    vikriti_notes = Column(Text, nullable=True)
+    # 3. Sara — tissue quality (pravara/madhyama/avara)
+    sara = Column(String, nullable=True)
+    sara_notes = Column(Text, nullable=True)
+    # 4. Samhanana — body compactness/build
+    samhanana = Column(String, nullable=True)
+    samhanana_notes = Column(Text, nullable=True)
+    # 5. Pramana — body measurements/proportion
+    pramana = Column(String, nullable=True)
+    pramana_notes = Column(Text, nullable=True)
+    # 6. Satmya — adaptability/wholesomeness
+    satmya = Column(String, nullable=True)
+    satmya_notes = Column(Text, nullable=True)
+    # 7. Satva — mental/psychological strength
+    satva = Column(String, nullable=True)  # pravara | madhyama | avara
+    satva_notes = Column(Text, nullable=True)
+    # 8. Ahara Shakti — digestive/metabolic capacity
+    ahara_shakti = Column(String, nullable=True)
+    ahara_shakti_notes = Column(Text, nullable=True)
+    # 9. Vyayama Shakti — exercise/physical capacity
+    vyayama_shakti = Column(String, nullable=True)
+    vyayama_shakti_notes = Column(Text, nullable=True)
+    # 10. Vaya — age category
+    vaya = Column(String, nullable=True)  # bala | madhyama | vriddha
+    vaya_notes = Column(Text, nullable=True)
+    # Overall
+    additional_notes = Column(Text, nullable=True)
+    physician_confirmed = Column(Boolean, default=False)
+    assessed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    assessed_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    session = relationship("ClinicalSession", back_populates="dashavidha_pariksha")
+
+
+class DoctorNote(Base):
+    """Persistent physician notes for a clinical session."""
+    __tablename__ = "doctor_notes"
+    id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(Integer, ForeignKey("clinical_sessions.id"), nullable=False)
+    patient_id = Column(Integer, ForeignKey("patients.id"), nullable=False)
+    content = Column(Text, nullable=False)
+    note_type = Column(String, default="general")  # general | assessment | plan | followup | ayurvedic
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    session = relationship("ClinicalSession", back_populates="doctor_notes")
+
 
 class ClinicalEntity(Base):
     __tablename__ = "clinical_entities"
@@ -240,7 +388,7 @@ class Document(Base):
     upload_at = Column(DateTime, default=datetime.utcnow)
     document_date = Column(String, nullable=True)  # Extracted date from document
     is_handwritten = Column(Boolean, default=False)
-    processing_status = Column(String, default="completed")  # pending, processing, completed, failed
+    processing_status = Column(String, default="pending")  # pending | processing | completed | failed | needs_verification
     ocr_confidence = Column(Float, nullable=True)
     session = relationship("ClinicalSession", back_populates="documents")
     extracted_entities = relationship("ExtractedEntity", back_populates="document")
@@ -283,6 +431,7 @@ class MedicalRecord(Base):
     document_date = Column(String, nullable=True)
     ocr_confidence = Column(Float, nullable=True)
     extracted_entities_json = Column(Text, nullable=True)  # JSON string of extracted entities
+    processing_status = Column(String, default="pending")  # pending | processing | completed | failed
     patient = relationship("Patient", back_populates="medical_records")
     session = relationship("ClinicalSession", back_populates="medical_records")
 
@@ -296,6 +445,6 @@ class AuditLog(Base):
     performed_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
     details = Column(Text, nullable=True)
-    before_state = Column(Text, nullable=True) # Added for immutable audit trails
-    after_state = Column(Text, nullable=True)  # Added for immutable audit trails
+    before_state = Column(Text, nullable=True)
+    after_state = Column(Text, nullable=True)
     patient = relationship("Patient", back_populates="audit_logs")

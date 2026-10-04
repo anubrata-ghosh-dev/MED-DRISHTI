@@ -285,10 +285,16 @@ export async function getDoctorQueue(): Promise<any[]> {
 export async function verifySession(
   sessionId: number | string,
   verifyData: {
-    chief_complaint?: string;
-    history_of_present_illness?: string;
-    medications?: string;
-    allergies?: string;
+    chief_complaints?: Array<Record<string, unknown>>;
+    hpi?: Array<Record<string, unknown>>;
+    medication_histories?: Array<Record<string, unknown>>;
+    allergy_histories?: Array<Record<string, unknown>>;
+    past_medical_histories?: Array<Record<string, unknown>>;
+    past_surgical_histories?: Array<Record<string, unknown>>;
+    family_histories?: Array<Record<string, unknown>>;
+    personal_histories?: Array<Record<string, unknown>>;
+    review_of_systems?: Array<Record<string, unknown>>;
+    ayush_histories?: Array<Record<string, unknown>>;
     physician_notes?: string;
   }
 ): Promise<any> {
@@ -354,7 +360,8 @@ export async function getPatientMedicalRecords(
 }
 
 export function getMedicalRecordFileUrl(recordId: number | string): string {
-  return `${API_BASE_URL}/api/v1/medical-records/${recordId}/file`;
+  const token = localStorage.getItem('access_token');
+  return `${API_BASE_URL}/api/v1/medical-records/${recordId}/file?token=${token || ''}`;
 }
 
 export async function deleteMedicalRecord(

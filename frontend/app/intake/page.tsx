@@ -7,7 +7,7 @@ import { ProgressStepper } from '@/components/ui/ProgressStepper';
 import { QuestionCard } from '@/components/voice/QuestionCard';
 import { useAuth } from '@/lib/auth-context';
 import { useLanguage } from '@/lib/language-context';
-import { getNextQuestion, createClinicalHistory } from '@/lib/api';
+import { api, getNextQuestion, createClinicalHistory } from '@/lib/api';
 
 export default function IntakePage() {
   const router = useRouter();
@@ -41,7 +41,7 @@ export default function IntakePage() {
     setError(null);
 
     // Fallback dummy session id if not created
-    const activeSessionId = sessionId || 1;
+    const activeSessionId = sessionId; if (!activeSessionId) { router.push("/department"); return; }
 
     try {
       const res = await getNextQuestion(
@@ -84,12 +84,27 @@ export default function IntakePage() {
       const updated = { ...collectedAnswers, [currentQuestionId]: answerText };
       collectedAnswersRef.current = updated;
       setCollectedAnswers(updated);
+
+      // Save statement with provenance
+      const activeSessionId = sessionId;
+      if (activeSessionId) {
+        try {
+          await api.post(`/api/v1/sessions/${activeSessionId}/patient-statements`, {
+            original_text: answerText,
+            original_language: language,
+            source: 'text',
+          });
+        } catch (e) {
+          console.error('Failed to save statement provenance', e);
+        }
+      }
+
       await fetchQuestion(answerText, currentQuestionId);
     }
   };
 
   const saveHistory = async (answers: Record<string, string>) => {
-    const activeSessionId = sessionId || 1;
+    const activeSessionId = sessionId; if (!activeSessionId) { router.push("/department"); return; }
     try {
       await createClinicalHistory(activeSessionId, {
         chief_complaints: answers['chief_complaint'] ? [{ complaint: answers['chief_complaint'] }] : [],

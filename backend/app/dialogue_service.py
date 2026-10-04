@@ -43,6 +43,29 @@ _TARGETED_QUESTIONS = {
     },
 }
 
+_AYURVEDA_QUESTIONS = {
+    "ayur_body_type": {
+        "id": "ayur_body_type",
+        "field": "ayush_history.body_frame",
+        "text": "To help us understand your body constitution (Prakriti), how would you describe your natural body frame and weight?",
+        "text_hi": "आपके शरीर की प्रकृति को समझने के लिए, आप अपने प्राकृतिक शारीरिक ढांचे और वजन का वर्णन कैसे करेंगे?",
+        "text_bn": "আপনার শরীরের প্রকৃতি বুঝতে, আপনার শারীরিক গঠন ও ওজন কেমন তা বলবেন কি?"
+    },
+    "ayur_digestion": {
+        "id": "ayur_digestion",
+        "field": "ayush_history.digestion",
+        "text": "How is your appetite and digestion normally? Do you often feel bloated, have acidity, or irregular bowel movements?",
+        "text_hi": "आपकी भूख और पाचन आमतौर पर कैसा रहता है? क्या आपको अक्सर गैस, एसिडिटी, या अनियमित मल त्याग की समस्या होती है?",
+        "text_bn": "আপনার ক্ষুধা ও হজম কেমন? আপনার কি প্রায়ই গ্যাস, অ্যাসিডিটি বা অনিয়মিত মলত্যাগের সমস্যা হয়?"
+    },
+    "ayur_sleep": {
+        "id": "ayur_sleep",
+        "field": "ayush_history.sleep",
+        "text": "How is your sleep pattern? Do you sleep deeply, or is it light and easily disturbed?",
+        "text_hi": "आपकी नींद कैसी है? क्या आपको गहरी नींद आती है, या हल्की नींद आती है और आसानी से टूट जाती है?",
+        "text_bn": "আপনার ঘুম কেমন? গভীর ঘুম হয়, নাকি পাতলা ঘুম যা সহজে ভেঙে যায়?"
+    }
+}
 
 def load_dialogue_policy():
     with open(_POLICY_PATH, encoding="utf-8") as f:
@@ -71,7 +94,6 @@ def resolve_next_question(
     language: str,
     department: str,
 ) -> Tuple[Optional[str], Optional[str], Optional[str], bool]:
-    """Ask one complaint-specific safety question and duration, then finish."""
     policy, question_map = load_dialogue_policy()
     language = (language or "en").lower().split("-")[0]
 
@@ -88,5 +110,19 @@ def resolve_next_question(
     if current_question_id.startswith("targeted_"):
         question = question_map["cc_duration"]
         return question["id"], question.get(f"text_{language}") or question["text"], question["field"], False
+
+    if current_question_id == "cc_duration":
+        if department.lower() == "ayurveda":
+            q = _AYURVEDA_QUESTIONS["ayur_body_type"]
+            return q["id"], q.get(f"text_{language}") or q["text"], q["field"], False
+        return None, None, None, True
+
+    if current_question_id == "ayur_body_type":
+        q = _AYURVEDA_QUESTIONS["ayur_digestion"]
+        return q["id"], q.get(f"text_{language}") or q["text"], q["field"], False
+
+    if current_question_id == "ayur_digestion":
+        q = _AYURVEDA_QUESTIONS["ayur_sleep"]
+        return q["id"], q.get(f"text_{language}") or q["text"], q["field"], False
 
     return None, None, None, True

@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { KioskWrapper } from '@/components/layout/KioskWrapper';
-import { ClinicalSummaryCard } from '@/components/summary/ClinicalSummaryCard';
+import { ClinicalSummaryCard } from "@/components/summary/ClinicalSummaryCard";
+import { AyurvedicAssessment } from "@/components/summary/AyurvedicAssessment";
 import { DocumentUploader } from '@/components/documents/DocumentUploader';
 import { BigButton } from '@/components/ui/BigButton';
 import {
@@ -13,6 +14,7 @@ import {
   getPatientMedicalRecords,
   getMedicalRecordFileUrl,
   MedicalRecordResponse,
+  api,
 } from '@/lib/api';
 
 const TRIAGE_COLORS: Record<string, { bg: string; text: string }> = {
@@ -48,6 +50,7 @@ export default function DoctorDashboardPage() {
   const [allergies, setAllergies] = useState('');
   const [physicianNotes, setPhysicianNotes] = useState('');
   const [verifySuccess, setVerifySuccess] = useState(false);
+  const [attentionError, setAttentionError] = useState<string | null>(null);
 
   const fetchQueue = async () => {
     setLoadingQueue(true);
@@ -101,10 +104,10 @@ export default function DoctorDashboardPage() {
     setVerifying(true);
     try {
       await verifySession(selectedSessionId, {
-        chief_complaint: chiefComplaint,
-        history_of_present_illness: hpi,
-        medications,
-        allergies,
+        chief_complaints: chiefComplaint ? [{ complaint: chiefComplaint, source: "physician_verified" }] : [],
+        hpi: hpi ? [{ progression: hpi, source: "physician_verified" }] : [],
+        medication_histories: medications ? medications.split(",").map(m => ({ drug_name: m.trim(), source: "physician_verified" })) : [],
+        allergy_histories: allergies ? allergies.split(",").map(a => ({ allergen: a.trim() })) : [],
         physician_notes: physicianNotes,
       });
       setVerifySuccess(true);
@@ -400,6 +403,8 @@ export default function DoctorDashboardPage() {
                   </div>
                 )}
 
+                <AyurvedicAssessment sessionId={selectedSessionId} />
+
                 {/* Physician Verification Form */}
                 <div className="glass-card rounded-[1.75rem] p-7 flex flex-col gap-5">
                   <div
@@ -470,6 +475,34 @@ export default function DoctorDashboardPage() {
                         e.currentTarget.style.boxShadow = 'none';
                       }}
                     />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold uppercase tracking-[0.08em]" style={{ color: "var(--text-secondary)" }}>
+                      Patient Attention Priority
+                    </label>
+                    <select
+                      className="clinical-input p-3 rounded-xl border border-[var(--glass-border)] bg-transparent"
+                      onChange={async (e) => {
+                        try {
+                          setAttentionError(null);
+                          await api.patch(`/api/v1/sessions/${selectedSessionId}/attention`, { attention_status: e.target.value, reason: "", note: "" });
+                          fetchQueue();
+                        } catch (err) {
+                          console.error('Unable to update patient attention status:', err);
+                          setAttentionError('Unable to update attention status. Please try again.');
+                        }
+                      }}
+                    >
+                      <option value="routine">🟢 Routine</option>
+                      <option value="needs_attention">🟡 Needs Attention</option>
+                      <option value="priority">🟠 Priority</option>
+                      <option value="critical">🔴 Critical</option>
+                      <option value="follow_up">⚪ Follow-up</option>
+                    </select>
+                    {attentionError && (
+                      <p className="text-xs font-semibold text-red-600">{attentionError}</p>
+                    )}
                   </div>
 
                   <BigButton

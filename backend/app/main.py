@@ -2,6 +2,7 @@ import json
 import io
 import os
 import uuid
+import logging
 from fastapi import FastAPI, HTTPException, Depends, Header, UploadFile, File, Form
 from fastapi.responses import Response, StreamingResponse, FileResponse
 from sqlalchemy.orm import Session
@@ -26,6 +27,16 @@ from . import hospitals as hospitals_module
 from .interop import FhirMapper, MockAbdmProvider
 from .dialogue_service import resolve_next_question
 from .clinical_intelligence import ClinicalIntelligenceService
+
+logger = logging.getLogger(__name__)
+
+MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024
+ALLOWED_UPLOAD_TYPES = {
+    "application/pdf",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+}
 
 app = FastAPI(
     title="Med-Drishti Backend",
@@ -211,7 +222,7 @@ def logout(current_user: models.User = Depends(get_current_user)):
 @app.post("/api/v1/patients", response_model=schemas.PatientResponse)
 def create_patient(
     payload: schemas.PatientCreate,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     date_of_birth = payload.date_of_birth.strip() if payload.date_of_birth and payload.date_of_birth.strip() else None
@@ -234,7 +245,7 @@ def create_patient(
 @app.get("/api/v1/patients/{patient_id}", response_model=schemas.PatientResponse)
 def get_patient(
     patient_id: int,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     patient = db.query(models.Patient).filter(models.Patient.id == patient_id).first()
@@ -248,7 +259,7 @@ def get_patient(
 def update_patient(
     patient_id: int,
     payload: schemas.PatientUpdate,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     patient = db.query(models.Patient).filter(models.Patient.id == patient_id).first()
@@ -269,7 +280,7 @@ def create_session(
     payload: schemas.ClinicalSessionCreate,
     patient_id: Optional[int] = None,
     department: str = "General",
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     session_patient_id = patient_id if patient_id is not None else payload.patient_id
@@ -293,7 +304,7 @@ def create_session(
 @app.get("/api/v1/sessions/{session_id}", response_model=schemas.ClinicalSessionResponse)
 def get_session(
     session_id: int,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     session = db.query(models.ClinicalSession).filter(models.ClinicalSession.id == session_id).first()
@@ -307,7 +318,7 @@ def get_session(
 def update_session(
     session_id: int,
     payload: schemas.ClinicalSessionUpdate,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     session = db.query(models.ClinicalSession).filter(models.ClinicalSession.id == session_id).first()
@@ -327,7 +338,7 @@ def update_session(
 def create_clinical_history(
     session_id: int,
     payload: schemas.StructuredClinicalHistoryCreate,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     session = db.query(models.ClinicalSession).filter(models.ClinicalSession.id == session_id).first()
@@ -423,7 +434,7 @@ def create_clinical_history(
 @app.get("/api/v1/sessions/{session_id}/history", response_model=schemas.StructuredClinicalHistoryResponse)
 def get_clinical_histories(
     session_id: int,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     session = db.query(models.ClinicalSession).filter(models.ClinicalSession.id == session_id).first()
@@ -449,7 +460,7 @@ def get_clinical_histories(
 def create_consent(
     patient_id: int,
     payload: schemas.ConsentCreate,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     patient = db.query(models.Patient).filter(models.Patient.id == patient_id).first()
@@ -472,7 +483,7 @@ def create_consent(
 @app.get("/api/v1/patients/{patient_id}/consents", response_model=list[schemas.ConsentResponse])
 def get_consents(
     patient_id: int,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     patient = db.query(models.Patient).filter(models.Patient.id == patient_id).first()
@@ -511,7 +522,7 @@ def generate_tts_audio(text: str, lang: str = "en"):
 async def transcribe_voice(
     audio: UploadFile = File(...),
     language: str = Form(default="en"),
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
 ):
     audio_bytes = await audio.read()
     result = gateway.transcribe(audio_bytes, language_hint=language if language != "en" else None)
@@ -520,7 +531,7 @@ async def transcribe_voice(
 @app.post("/api/v1/voice/next-question", response_model=schemas.NextQuestionResponse)
 def get_next_question(
     payload: schemas.NextQuestionRequest,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     session = db.query(models.ClinicalSession).filter(
@@ -577,7 +588,7 @@ def get_dialogue_next_question(
 async def upload_document(
     session_id: int = Form(...),
     file: UploadFile = File(...),
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     session = db.query(models.ClinicalSession).filter(models.ClinicalSession.id == session_id).first()
@@ -587,6 +598,10 @@ async def upload_document(
     file_bytes = await file.read()
     if not file_bytes:
         raise HTTPException(status_code=400, detail="Uploaded document is empty")
+    if len(file_bytes) > MAX_UPLOAD_SIZE_BYTES:
+        raise HTTPException(status_code=413, detail="Document exceeds the 10 MB upload limit")
+    if file.content_type not in ALLOWED_UPLOAD_TYPES:
+        raise HTTPException(status_code=415, detail="Only PDF, JPEG, PNG, and WebP documents are supported")
 
     temp_path = f"/tmp/{uuid.uuid4().hex}_{os.path.basename(file.filename or 'document')}"
     try:
@@ -625,7 +640,8 @@ async def upload_document(
         file_name=file.filename,
         file_type=file.content_type or "application/octet-stream",
         s3_key=f"uploads/docs/{uuid.uuid4().hex}_{file.filename}",
-        ocr_text=raw_ocr_text
+        ocr_text=raw_ocr_text,
+        processing_status="completed"
     )
     db.add(doc_record)
     db.commit()
@@ -672,7 +688,7 @@ async def upload_document(
 @app.get("/api/v1/sessions/{session_id}/documents", response_model=list[schemas.DocumentDetailResponse])
 def get_session_documents(
     session_id: int,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     session = db.query(models.ClinicalSession).filter(models.ClinicalSession.id == session_id).first()
@@ -683,7 +699,7 @@ def get_session_documents(
 @app.get("/api/v1/documents/{document_id}/entities")
 def get_document_entities(
     document_id: int,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     doc = db.query(models.Document).filter(models.Document.id == document_id).first()
@@ -702,27 +718,28 @@ async def upload_medical_record(
     description: str = Form(default=""),
     record_type: str = Form(default="other"),
     session_id: Optional[int] = Form(default=None),
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     patient = db.query(models.Patient).filter(models.Patient.id == patient_id).first()
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
+    if file.content_type not in ALLOWED_UPLOAD_TYPES:
+        raise HTTPException(status_code=415, detail="Only PDF, JPEG, PNG, and WebP records are supported")
 
     upload_dir = os.path.join(os.path.dirname(__file__), "..", "uploads", "medical_records")
     os.makedirs(upload_dir, exist_ok=True)
-    unique_name = f"{patient_id}_{uuid.uuid4().hex[:8]}_{file.filename}"
+    safe_filename = os.path.basename(file.filename or "medical-record")
+    unique_name = f"{patient_id}_{uuid.uuid4().hex[:8]}_{safe_filename}"
     file_path = os.path.join(upload_dir, unique_name)
 
     file_bytes = await file.read()
+    if not file_bytes:
+        raise HTTPException(status_code=400, detail="Uploaded medical record is empty")
+    if len(file_bytes) > MAX_UPLOAD_SIZE_BYTES:
+        raise HTTPException(status_code=413, detail="Medical record exceeds the 10 MB upload limit")
     with open(file_path, "wb") as f:
         f.write(file_bytes)
-
-    ocr_text = ""
-    try:
-        ocr_text = gateway.extract_text(file_path)
-    except Exception as e:
-        print(f"[OCR Warning] Could not extract text: {e}")
 
     try:
         rec_type = models.MedicalRecordTypeEnum(record_type)
@@ -733,14 +750,26 @@ async def upload_medical_record(
         patient_id=patient_id,
         session_id=session_id,
         record_type=rec_type,
-        title=title.strip() if title else file.filename,
+        title=title.strip() if title else safe_filename,
         description=description.strip() if description else None,
-        file_name=file.filename,
-        file_type=file.content_type or "application/octet-stream",
+        file_name=safe_filename,
+        file_type=file.content_type,
         file_path=file_path,
-        ocr_text=ocr_text,
+        processing_status="processing",
     )
     db.add(record)
+    db.commit()
+    db.refresh(record)
+
+    ocr_text = ""
+    try:
+        ocr_text = gateway.extract_text(file_path)
+    except Exception as exc:
+        logger.warning("Could not extract OCR for medical record %s: %s", record.id, exc)
+        record.processing_status = "failed"
+    else:
+        record.ocr_text = ocr_text
+        record.processing_status = "completed" if ocr_text else "failed"
     db.commit()
     db.refresh(record)
     return record
@@ -748,7 +777,7 @@ async def upload_medical_record(
 @app.get("/api/v1/patients/{patient_id}/medical-records", response_model=list[schemas.MedicalRecordResponse])
 def get_patient_medical_records(
     patient_id: int,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     patient = db.query(models.Patient).filter(models.Patient.id == patient_id).first()
@@ -762,9 +791,14 @@ def get_patient_medical_records(
 @app.get("/api/v1/medical-records/{record_id}/file")
 def get_medical_record_file(
     record_id: int,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    token: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
+    if not token:
+        raise HTTPException(status_code=401, detail="Token required")
+    user_payload = auth.decode_access_token(token)
+    if not user_payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
     record = db.query(models.MedicalRecord).filter(models.MedicalRecord.id == record_id).first()
     if not record:
         raise HTTPException(status_code=404, detail="Medical record not found")
@@ -779,7 +813,7 @@ def get_medical_record_file(
 @app.delete("/api/v1/medical-records/{record_id}", status_code=200)
 def delete_medical_record(
     record_id: int,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     record = db.query(models.MedicalRecord).filter(models.MedicalRecord.id == record_id).first()
@@ -795,7 +829,7 @@ def delete_medical_record(
 @app.get("/api/v1/sessions/{session_id}/summary")
 def get_session_summary(
     session_id: int,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     session = db.query(models.ClinicalSession).filter(models.ClinicalSession.id == session_id).first()
@@ -978,7 +1012,7 @@ def get_session_summary(
 # ============ Red-Flag Engine & Triage Endpoints ============
 @app.get("/api/v1/triage/alerts", response_model=list[schemas.RedFlagResponse])
 def get_triage_alerts(
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     alerts = db.query(models.RedFlag).order_by(models.RedFlag.triggered_at.desc()).all()
@@ -989,7 +1023,7 @@ def get_triage_alerts(
 def review_triage_alert(
     alert_id: int,
     payload: schemas.RedFlagReviewRequest,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     alert = db.query(models.RedFlag).filter(models.RedFlag.id == alert_id).first()
@@ -1004,7 +1038,7 @@ def review_triage_alert(
 # ============ Doctor Dashboard & Verification Endpoints ============
 @app.get("/api/v1/doctor/queue", response_model=list[schemas.DoctorQueueItemResponse])
 def get_doctor_queue(
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     sessions = db.query(models.ClinicalSession).order_by(models.ClinicalSession.started_at.desc()).all()
@@ -1025,6 +1059,7 @@ def get_doctor_queue(
             "started_at": s.started_at,
             "completed_at": s.completed_at,
             "triage_status": triage_status,
+            "attention_status": s.attention_status.value if s.attention_status else "routine",
             "red_flags_count": len(red_flags),
             "documents_count": len(s.documents),
             "medical_records_count": len(s.patient.medical_records)
@@ -1039,7 +1074,7 @@ def get_doctor_queue(
 def verify_session(
     session_id: int,
     payload: schemas.SessionVerifyRequest,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     session = db.query(models.ClinicalSession).filter(models.ClinicalSession.id == session_id).first()
@@ -1098,6 +1133,14 @@ def verify_session(
             db.delete(existing)
         for ay in payload.ayush_histories:
             db.add(models.AyushHistory(session_id=session_id, **ay.model_dump()))
+    if payload.physician_notes and payload.physician_notes.strip():
+        db.add(models.DoctorNote(
+            session_id=session_id,
+            patient_id=session.patient_id,
+            content=payload.physician_notes.strip(),
+            note_type="general",
+            created_by=current_user.id,
+        ))
 
     session.status = "completed"
     session.completed_at = datetime.utcnow()
@@ -1119,7 +1162,7 @@ def verify_session(
 @app.get("/api/v1/sessions/{session_id}/audit-logs", response_model=list[schemas.AuditLogResponse])
 def get_session_audit_logs(
     session_id: int,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     session = db.query(models.ClinicalSession).filter(models.ClinicalSession.id == session_id).first()
@@ -1175,7 +1218,7 @@ def ai_translate(payload: TranslatePayload):
 @app.get("/api/v1/sessions/{session_id}/fhir")
 def get_fhir_bundle(
     session_id: int,
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     session = db.query(models.ClinicalSession).filter(models.ClinicalSession.id == session_id).first()
@@ -1261,7 +1304,7 @@ def patient_chat(payload: ChatRequest):
 
 @app.get("/api/v1/triage/stats")
 def get_triage_stats(
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     alerts = db.query(models.RedFlag).all()
@@ -1298,3 +1341,198 @@ def list_hospitals(state: Optional[str] = None):
 def search_hospitals(q: str):
     results = hospitals_module.search_hospitals(query=q)
     return {"hospitals": results, "count": len(results)}
+
+# ==============================================================================
+# AYURVEDIC MODULE ENDPOINTS (Added during Phase 1/2 fixes)
+# ==============================================================================
+
+@app.post("/api/v1/sessions/{session_id}/ayush-history", response_model=list[schemas.AyushHistoryResponse])
+def create_ayush_history(
+    session_id: int,
+    history_data: dict,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Save key-value ayush history (called by frontend intake)."""
+    session = db.query(models.ClinicalSession).filter(models.ClinicalSession.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # Simple dict-to-key-value conversion since frontend sends unstructured object
+    results = []
+    for key, value in history_data.items():
+        if value:
+            # check if exists
+            existing = db.query(models.AyushHistory).filter_by(session_id=session_id, parameter=key).first()
+            if existing:
+                existing.value = str(value)
+                results.append(existing)
+            else:
+                new_hist = models.AyushHistory(session_id=session_id, parameter=key, value=str(value))
+                db.add(new_hist)
+                results.append(new_hist)
+
+    db.commit()
+    for r in results:
+        db.refresh(r)
+    return results
+
+@app.get("/api/v1/sessions/{session_id}/ayush-history", response_model=list[schemas.AyushHistoryResponse])
+def get_ayush_history(
+    session_id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return db.query(models.AyushHistory).filter(models.AyushHistory.session_id == session_id).all()
+
+@app.post("/api/v1/sessions/{session_id}/prakriti", response_model=schemas.PrakritiAssessmentResponse)
+def create_prakriti_assessment(
+    session_id: int,
+    payload: schemas.PrakritiAssessmentCreate,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    assessment = db.query(models.PrakritiAssessment).filter(models.PrakritiAssessment.session_id == session_id).first()
+    if not assessment:
+        assessment = models.PrakritiAssessment(session_id=session_id)
+        db.add(assessment)
+    for key, value in payload.model_dump(exclude_unset=True).items():
+        setattr(assessment, key, value)
+    db.commit()
+    db.refresh(assessment)
+    return assessment
+
+@app.get("/api/v1/sessions/{session_id}/prakriti", response_model=schemas.PrakritiAssessmentResponse)
+def get_prakriti_assessment(
+    session_id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    assessment = db.query(models.PrakritiAssessment).filter(models.PrakritiAssessment.session_id == session_id).first()
+    if not assessment:
+        raise HTTPException(status_code=404, detail="Not found")
+    return assessment
+
+@app.post("/api/v1/sessions/{session_id}/vikriti", response_model=schemas.VikritAssessmentResponse)
+def create_vikriti_assessment(
+    session_id: int,
+    payload: schemas.VikritAssessmentCreate,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    assessment = db.query(models.VikritAssessment).filter(models.VikritAssessment.session_id == session_id).first()
+    if not assessment:
+        assessment = models.VikritAssessment(session_id=session_id)
+        db.add(assessment)
+    for key, value in payload.model_dump(exclude_unset=True).items():
+        setattr(assessment, key, value)
+    db.commit()
+    db.refresh(assessment)
+    return assessment
+
+@app.get("/api/v1/sessions/{session_id}/vikriti", response_model=schemas.VikritAssessmentResponse)
+def get_vikriti_assessment(
+    session_id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    assessment = db.query(models.VikritAssessment).filter(models.VikritAssessment.session_id == session_id).first()
+    if not assessment:
+        raise HTTPException(status_code=404, detail="Not found")
+    return assessment
+
+@app.post("/api/v1/sessions/{session_id}/dashavidha", response_model=schemas.DashavidhaParikshhaResponse)
+def create_dashavidha_assessment(
+    session_id: int,
+    payload: schemas.DashavidhaParikshhaCreate,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    assessment = db.query(models.DashavidhaPariksha).filter(models.DashavidhaPariksha.session_id == session_id).first()
+    if not assessment:
+        assessment = models.DashavidhaPariksha(session_id=session_id)
+        db.add(assessment)
+    for key, value in payload.model_dump(exclude_unset=True).items():
+        setattr(assessment, key, value)
+    db.commit()
+    db.refresh(assessment)
+    return assessment
+
+@app.get("/api/v1/sessions/{session_id}/dashavidha", response_model=schemas.DashavidhaParikshhaResponse)
+def get_dashavidha_assessment(
+    session_id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    assessment = db.query(models.DashavidhaPariksha).filter(models.DashavidhaPariksha.session_id == session_id).first()
+    if not assessment:
+        raise HTTPException(status_code=404, detail="Not found")
+    return assessment
+
+# ==============================================================================
+# PATIENT STATEMENTS & DOCTOR NOTES
+# ==============================================================================
+
+@app.post("/api/v1/sessions/{session_id}/patient-statements", response_model=schemas.PatientStatementResponse)
+def create_patient_statement(
+    session_id: int,
+    payload: schemas.PatientStatementCreate,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    stmt = models.PatientStatement(session_id=session_id, **payload.model_dump())
+    db.add(stmt)
+    db.commit()
+    db.refresh(stmt)
+    return stmt
+
+@app.get("/api/v1/sessions/{session_id}/patient-statements", response_model=list[schemas.PatientStatementResponse])
+def get_patient_statements(
+    session_id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return db.query(models.PatientStatement).filter(models.PatientStatement.session_id == session_id).order_by(models.PatientStatement.created_at.asc()).all()
+
+@app.post("/api/v1/sessions/{session_id}/notes", response_model=schemas.DoctorNoteResponse)
+def create_doctor_note(session_id: int, payload: schemas.DoctorNoteCreate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    session = db.query(models.ClinicalSession).filter(models.ClinicalSession.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    note = models.DoctorNote(
+        session_id=session_id,
+        patient_id=session.patient_id,
+        content=payload.content,
+        note_type=payload.note_type,
+        created_by=current_user.id
+    )
+    db.add(note)
+    db.commit()
+    db.refresh(note)
+    return note
+
+@app.get("/api/v1/sessions/{session_id}/notes", response_model=list[schemas.DoctorNoteResponse])
+def get_doctor_notes(
+    session_id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return db.query(models.DoctorNote).filter(models.DoctorNote.session_id == session_id).order_by(models.DoctorNote.created_at.desc()).all()
+
+@app.patch("/api/v1/sessions/{session_id}/attention", response_model=schemas.AttentionStatusResponse)
+def update_attention_status(session_id: int, payload: schemas.AttentionStatusUpdate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    session = db.query(models.ClinicalSession).filter(models.ClinicalSession.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    session.attention_status = payload.attention_status
+    session.attention_reason = payload.reason
+    session.attention_note = payload.note
+    session.attention_changed_by = current_user.id
+    import datetime
+    session.attention_changed_at = datetime.datetime.utcnow()
+
+    db.commit()
+    db.refresh(session)
+    return session

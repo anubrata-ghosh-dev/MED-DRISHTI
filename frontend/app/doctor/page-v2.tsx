@@ -90,10 +90,17 @@ export default function DoctorDashboardPage() {
     setVerifying(true);
     try {
       await verifySession(selectedSessionId, {
-        chief_complaint: chiefComplaint,
-        history_of_present_illness: hpi,
-        medications,
-        allergies,
+        chief_complaints: chiefComplaint ? [{ complaint: chiefComplaint, source: 'physician_verified' }] : [],
+        hpi: hpi ? [{ progression: hpi, source: 'physician_verified' }] : [],
+        medication_histories: medications
+          ? medications.split(',').map((value) => ({
+              drug_name: value.trim(),
+              source: 'physician_verified',
+            }))
+          : [],
+        allergy_histories: allergies
+          ? allergies.split(',').map((value) => ({ allergen: value.trim() }))
+          : [],
         physician_notes: physicianNotes,
       });
 
