@@ -24,8 +24,6 @@ pillow>=10.1.0
 pytesseract>=0.3.10
 easyocr>=1.7.0
 pdf2image>=1.16.3
-opencv-python-headless>=4.8.0
 
 # Other utils
 gtts>=2.5.0
-python-dateutil>=2.8.2

@@ -25,7 +25,7 @@ const formatErrorMessage = (detail: any): string => {
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { setPatientId, setPatientName, setSessionId } = useAuth();
+  const { login, setPatientId, setPatientName, setSessionId } = useAuth();
   const { language } = useLanguage();
   const t = getTranslation(language);
 
@@ -52,6 +52,13 @@ export default function RegisterPage() {
     setError(null);
 
     try {
+      const kioskEmail = process.env.NEXT_PUBLIC_KIOSK_EMAIL;
+      const kioskPassword = process.env.NEXT_PUBLIC_KIOSK_PASSWORD;
+      if (!kioskEmail || !kioskPassword) {
+        throw new Error('Kiosk authentication is not configured.');
+      }
+      await login(kioskEmail, kioskPassword);
+
       const patient = await createPatient({
         name: name.trim(),
         date_of_birth: dateOfBirth.trim() || undefined,
@@ -70,7 +77,10 @@ export default function RegisterPage() {
       router.push('/consent');
     } catch (err: any) {
       console.error('Registration error:', err);
-      const detail = err.response?.data?.detail || err.message;
+      const detail =
+        err.response?.data?.error?.message ||
+        err.response?.data?.detail ||
+        err.message;
       setError(formatErrorMessage(detail));
     } finally {
       setLoading(false);
