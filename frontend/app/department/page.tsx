@@ -89,7 +89,7 @@ export default function DepartmentPage() {
 
   return (
     <KioskWrapper>
-      <div className="w-full flex flex-col items-center gap-6 animate-fadeIn">
+      <div className="w-full flex flex-col items-center justify-center min-h-[75vh] gap-10 py-8 animate-fadeIn">
         <ProgressStepper
           steps={['Language', 'Register', 'Consent', 'Department', 'Intake', 'Records']}
           currentStep={3}
@@ -103,7 +103,7 @@ export default function DepartmentPage() {
           <h1 className="text-3xl md:text-4xl font-extrabold text-[var(--chart-ink)]">
             Select Your Department / अपना विभाग चुनें
           </h1>
-          <p className="text-slate-500 font-medium text-sm md:text-base">
+          <p className="text-[var(--text-muted)] font-medium text-sm md:text-base">
             Tap a department below to begin your automated clinical intake.
           </p>
         </div>
@@ -115,7 +115,7 @@ export default function DepartmentPage() {
               key={dept.id}
               type="button"
               onClick={() => handleSelectDepartment(dept)}
-              className="clinical-card group relative flex min-h-[140px] md:min-h-[150px] flex-col items-center justify-center rounded-3xl border border-[var(--line)] bg-white/80 p-6 text-center shadow-clinical transition-all duration-200 hover:-translate-y-1 hover:border-[var(--pulse-teal)] hover:bg-white hover:shadow-xl active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-[rgba(31,111,99,0.20)]"
+              className="clinical-card group relative flex min-h-[140px] md:min-h-[150px] flex-col items-center justify-center rounded-3xl border border-[var(--line)] bg-[var(--glass-bg)]/80 p-6 text-center shadow-clinical transition-all duration-200 hover:-translate-y-1 hover:border-[var(--pulse-teal)] hover:bg-[var(--glass-bg)] hover:shadow-xl active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-[rgba(31,111,99,0.20)]"
             >
               {dept.badge && (
                 <div className="absolute top-3 right-3 rounded-full bg-[rgba(31,111,99,0.12)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--pulse-teal)]">
@@ -127,11 +127,11 @@ export default function DepartmentPage() {
                 {dept.icon}
               </span>
 
-              <h3 className="text-xl font-extrabold text-slate-800 transition-colors group-hover:text-[var(--pulse-teal)]">
+              <h3 className="text-xl font-extrabold text-[var(--text-primary)] transition-colors group-hover:text-[var(--pulse-teal)]">
                 {dept.name}
               </h3>
 
-              <p className="text-sm font-semibold text-slate-500 mt-0.5">
+              <p className="text-sm font-semibold text-[var(--text-muted)] mt-0.5">
                 {dept.hindiName}
               </p>
 
@@ -144,7 +144,7 @@ export default function DepartmentPage() {
 
         {/* Bottom Help / Info Notice */}
         <div className="mt-2 text-center">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[var(--text-muted)]">
             Unsure which department to choose? Select{' '}
             <span className="font-bold text-[var(--pulse-teal)]">General OPD</span> for a general checkup.
           </p>

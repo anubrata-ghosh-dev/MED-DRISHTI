@@ -129,7 +129,7 @@ export default function IntakePage() {
 
   return (
     <KioskWrapper>
-      <div className="w-full flex flex-col items-center gap-6">
+      <div className="w-full flex flex-col items-center justify-center min-h-[75vh] gap-12 py-10">
         <ProgressStepper
           steps={['Language', 'Register', 'Consent', 'Department', 'Intake', 'Records']}
           currentStep={4}
@@ -145,7 +145,7 @@ export default function IntakePage() {
         {loading && !currentQuestionId ? (
           <div className="flex flex-col items-center gap-4 py-12">
             <div className="animate-spin text-5xl text-[var(--pulse-teal)]">🏥</div>
-            <p className="font-semibold text-slate-600">Starting Clinical Intake...</p>
+            <p className="font-semibold text-[var(--text-secondary)]">Starting Clinical Intake...</p>
           </div>
         ) : (
           <QuestionCard

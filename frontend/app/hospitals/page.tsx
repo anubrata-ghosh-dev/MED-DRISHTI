@@ -150,14 +150,14 @@ export default function HospitalsPage() {
                 🏥
               </div>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Med-Drishti</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--text-muted)]">Med-Drishti</p>
                 <h1 className="text-2xl md:text-3xl text-[var(--chart-ink)]">Nearby Hospitals</h1>
-                <p className="text-sm text-slate-500 mt-0.5">Find hospitals near your location · All India</p>
+                <p className="text-sm text-[var(--text-muted)] mt-0.5">Find hospitals near your location · All India</p>
               </div>
             </div>
             <button
               onClick={() => router.back()}
-              className="rounded-xl border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+              className="rounded-xl border border-[var(--line)] bg-[var(--glass-bg)] px-4 py-2 text-sm font-semibold text-[var(--text-secondary)] hover:bg-[var(--glass-bg-strong)] transition-colors"
             >
               ← Back
             </button>
@@ -189,7 +189,7 @@ export default function HospitalsPage() {
                 <p className="text-sm font-semibold text-red-700">{locationError}</p>
               )}
               {locationStatus === 'idle' && (
-                <p className="text-sm text-slate-500">Click to detect your location</p>
+                <p className="text-sm text-[var(--text-muted)]">Click to detect your location</p>
               )}
             </div>
             <button
@@ -217,7 +217,7 @@ export default function HospitalsPage() {
               }}
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                <div className="w-12 h-12 rounded-xl bg-[var(--glass-bg)] flex items-center justify-center shadow-sm">
                   <span className="text-2xl">🗺️</span>
                 </div>
                 <div>
@@ -242,7 +242,7 @@ export default function HospitalsPage() {
               onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSearch()}
               placeholder="Search by name, city, specialty..."
-              className="flex-1 rounded-xl border border-[var(--line)] bg-white px-4 py-2.5 text-sm text-slate-700 outline-none focus:border-[var(--pulse-teal)] transition-colors"
+              className="flex-1 rounded-xl border border-[var(--line)] bg-[var(--glass-bg)] px-4 py-2.5 text-sm text-[var(--text-secondary)] outline-none focus:border-[var(--pulse-teal)] transition-colors"
             />
             <button
               onClick={handleSearch}
@@ -257,7 +257,7 @@ export default function HospitalsPage() {
           <select
             value={selectedState}
             onChange={e => handleStateFilter(e.target.value)}
-            className="rounded-xl border border-[var(--line)] bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-[var(--pulse-teal)] transition-colors min-w-[150px]"
+            className="rounded-xl border border-[var(--line)] bg-[var(--glass-bg)] px-3 py-2.5 text-sm text-[var(--text-secondary)] outline-none focus:border-[var(--pulse-teal)] transition-colors min-w-[150px]"
           >
             <option value="">All States</option>
             {indiaStates.map(s => <option key={s} value={s}>{s}</option>)}
@@ -272,7 +272,7 @@ export default function HospitalsPage() {
                 setRadiusKm(r);
                 if (userLocation) fetchNearby(userLocation.lat, userLocation.lng, r);
               }}
-              className="rounded-xl border border-[var(--line)] bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-[var(--pulse-teal)] min-w-[120px]"
+              className="rounded-xl border border-[var(--line)] bg-[var(--glass-bg)] px-3 py-2.5 text-sm text-[var(--text-secondary)] outline-none focus:border-[var(--pulse-teal)] min-w-[120px]"
             >
               <option value={20}>Within 20 km</option>
               <option value={50}>Within 50 km</option>
@@ -287,12 +287,12 @@ export default function HospitalsPage() {
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-16 gap-4">
             <div className="w-12 h-12 rounded-full border-4 border-[var(--pulse-teal)] border-t-transparent animate-spin" />
-            <p className="text-slate-500 font-semibold">Finding hospitals...</p>
+            <p className="text-[var(--text-muted)] font-semibold">Finding hospitals...</p>
           </div>
         ) : hospitals.length === 0 ? (
           <div className="clinical-card rounded-2xl p-10 text-center">
             <p className="text-4xl mb-3">🏥</p>
-            <p className="font-semibold text-slate-600">No hospitals found in this area.</p>
+            <p className="font-semibold text-[var(--text-secondary)]">No hospitals found in this area.</p>
             <p className="text-sm text-slate-400 mt-1">Try increasing the radius or searching by state.</p>
           </div>
         ) : (
@@ -309,7 +309,7 @@ export default function HospitalsPage() {
                       <span className="text-base">{TYPE_ICONS[h.type] || '🏥'}</span>
                       <h2 className="text-base font-bold text-[var(--chart-ink)] leading-tight">{h.name}</h2>
                     </div>
-                    <p className="text-xs text-slate-500 mt-0.5">{h.address}, {h.city}, {h.state}</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5">{h.address}, {h.city}, {h.state}</p>
                   </div>
                   <div className="flex flex-col items-end gap-1 flex-shrink-0">
                     {h.distance_km !== undefined && (
@@ -329,7 +329,7 @@ export default function HospitalsPage() {
                 {/* Specialties */}
                 <div className="flex flex-wrap gap-1.5">
                   {h.specialties.slice(0, 5).map(s => (
-                    <span key={s} className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-[var(--line)]">
+                    <span key={s} className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[var(--glass-bg-strong)] text-[var(--text-secondary)] border border-[var(--line)]">
                       {s}
                     </span>
                   ))}

@@ -50,7 +50,7 @@ export default function DonePage() {
 
   return (
     <KioskWrapper showLanguageTag={false}>
-      <div className="w-full max-w-lg bg-white p-8 rounded-3xl shadow-xl border border-slate-100 flex flex-col items-center text-center gap-6 animate-fadeIn">
+      <div className="w-full max-w-lg bg-[var(--glass-bg)] p-8 rounded-3xl shadow-xl border border-[var(--glass-border)] flex flex-col items-center text-center gap-6 animate-fadeIn">
         <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-5xl font-black">
           ✓
         </div>
@@ -59,10 +59,10 @@ export default function DonePage() {
           <p className="text-xs font-bold uppercase tracking-wider text-[var(--pulse-teal)]">
             {t.doneTag}
           </p>
-          <h2 className="text-3xl font-black text-slate-800">
+          <h2 className="text-3xl font-black text-[var(--text-primary)]">
             {t.doneTitle}
           </h2>
-          <p className="text-slate-600 text-base font-medium">
+          <p className="text-[var(--text-secondary)] text-base font-medium">
             {t.doneSub}
           </p>
         </div>
@@ -73,7 +73,7 @@ export default function DonePage() {
           <span>Your session has been securely cleared.</span>
         </div>
 
-        <div className="w-full rounded-2xl border border-[var(--line)] bg-slate-50 p-4 text-sm font-semibold text-slate-600">
+        <div className="w-full rounded-2xl border border-[var(--line)] bg-[var(--glass-bg-strong)] p-4 text-sm font-semibold text-[var(--text-secondary)]">
           Resetting in <span className="font-bold text-[var(--pulse-teal)]">{countdown}</span>s
         </div>
 

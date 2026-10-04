@@ -50,12 +50,12 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
   };
 
   return (
-    <div className="w-full bg-white p-6 rounded-3xl border border-slate-200 shadow-lg flex flex-col gap-6">
+    <div className="w-full bg-[var(--glass-bg)] p-6 rounded-3xl border border-[var(--line)] shadow-lg flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h3 className="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+        <h3 className="text-xl font-extrabold text-[var(--text-primary)] flex items-center gap-2">
           📄 Upload Clinical Documents & Prescriptions
         </h3>
-        <p className="text-sm font-medium text-slate-500">
+        <p className="text-sm font-medium text-[var(--text-muted)]">
           Upload existing lab reports or prescriptions for automated OCR entity extraction.
         </p>
       </div>
@@ -67,7 +67,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
       )}
 
       {/* File Dropzone */}
-      <div className="rounded-2xl border-2 border-dashed border-[var(--line)] bg-slate-50 p-6 text-center transition-colors hover:border-[var(--pulse-teal)] hover:bg-[rgba(31,111,99,0.04)] flex flex-col items-center gap-3">
+      <div className="rounded-2xl border-2 border-dashed border-[var(--line)] bg-[var(--glass-bg-strong)] p-6 text-center transition-colors hover:border-[var(--pulse-teal)] hover:bg-[rgba(31,111,99,0.04)] flex flex-col items-center gap-3">
         <input
           type="file"
           id="file-upload"
@@ -80,7 +80,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
           className="cursor-pointer flex flex-col items-center gap-2"
         >
           <span className="text-4xl">📤</span>
-          <span className="text-base font-bold text-slate-700">
+          <span className="text-base font-bold text-[var(--text-secondary)]">
             {selectedFile ? selectedFile.name : 'Click to select prescription or lab report'}
           </span>
           <span className="text-xs text-slate-400">
@@ -128,11 +128,11 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
                 <span className="text-[10px] opacity-60">({Math.round(ent.confidence * 100)}%)</span>
               </div>
             ))}
-          </div> : <p className="text-sm text-slate-600">Text was read, but no supported medicine, lab, date, or diagnosis fields were recognized.</p>}
+          </div> : <p className="text-sm text-[var(--text-secondary)]">Text was read, but no supported medicine, lab, date, or diagnosis fields were recognized.</p>}
           {result.ocr_text?.trim() && (
-            <details className="rounded-xl border border-slate-200 bg-white p-3">
-              <summary className="cursor-pointer text-sm font-bold text-slate-700">Review detected text</summary>
-              <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap text-xs text-slate-600">{result.ocr_text}</pre>
+            <details className="rounded-xl border border-[var(--line)] bg-[var(--glass-bg)] p-3">
+              <summary className="cursor-pointer text-sm font-bold text-[var(--text-secondary)]">Review detected text</summary>
+              <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap text-xs text-[var(--text-secondary)]">{result.ocr_text}</pre>
             </details>
           )}
         </div>

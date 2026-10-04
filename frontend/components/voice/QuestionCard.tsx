@@ -103,7 +103,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   const assistiveOptions = getAssistiveOptions();
 
   return (
-    <div className="w-full max-w-2xl bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-slate-100 flex flex-col gap-6">
+    <div className="w-full max-w-3xl glass-card rounded-[2rem] p-8 md:p-12 flex flex-col gap-8 mx-auto">
       <div className="flex flex-col gap-3 text-center">
         <div className="flex items-center justify-center gap-2">
           <span className="rounded-full bg-[rgba(31,111,99,0.12)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--pulse-teal)]">
@@ -112,20 +112,20 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           <button
             type="button"
             onClick={speakQuestionAgain}
-            className="p-2 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-700 transition-transform active:scale-95 text-lg"
+            className="p-2 bg-[var(--glass-bg-strong)] hover:bg-[var(--glass-bg-strong)] rounded-full text-[var(--text-primary)] transition-transform active:scale-95 text-lg"
             title="Read question aloud"
           >
             🔊 Listen
           </button>
         </div>
-        <h2 className="text-2xl md:text-3xl font-extrabold text-[var(--chart-ink)] leading-snug">
+        <h2 className="text-2xl md:text-3xl font-extrabold text-[var(--text-primary)] leading-snug">
           {question}
         </h2>
       </div>
 
       {assistiveOptions.length > 0 && !isTyping && (
-        <div className="flex flex-col gap-2 pt-2 border-t border-slate-100">
-          <span className="text-xs font-black uppercase text-slate-400 text-center tracking-wider">
+        <div className="flex flex-col gap-2 pt-2 border-t border-[var(--glass-border)]">
+          <span className="text-xs font-black uppercase text-[var(--text-muted)] text-center tracking-wider">
             👉 Hover or Tap an Icon to Hear (आइकन पर कर्सर लाएं तो आवाज आएगी):
           </span>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -139,12 +139,12 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                   speakOptionText(opt);
                   onAnswer(opt.value);
                 }}
-                className="flex flex-col items-center justify-center p-4 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-[rgba(31,111,99,0.08)] hover:border-[var(--pulse-teal)] transition-all active:scale-95 shadow-sm group cursor-pointer"
+                className="flex flex-col items-center justify-center p-4 rounded-2xl border border-[var(--glass-border)] bg-transparent hover:bg-[rgba(31,111,99,0.08)] hover:border-[var(--pulse-teal)] transition-all active:scale-95 shadow-sm group cursor-pointer"
               >
                 <span className="text-4xl mb-1 group-hover:scale-110 transition-transform">
                   {opt.icon}
                 </span>
-                <span className="text-xs font-bold text-slate-700 text-center leading-tight">
+                <span className="text-xs font-bold text-[var(--text-primary)] text-center leading-tight">
                   {opt.label}
                 </span>
               </button>
@@ -154,7 +154,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       )}
 
       {!isTyping ? (
-        <div className="flex flex-col items-center gap-6 pt-2 border-t border-slate-100">
+        <div className="flex flex-col items-center gap-6 pt-2 border-t border-[var(--glass-border)]">
           <VoiceRecorder
             onTranscription={onAnswer}
             language={language}
@@ -162,7 +162,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           <button
             type="button"
             onClick={() => setIsTyping(true)}
-            className="text-sm font-semibold text-slate-500 underline underline-offset-4 transition-colors hover:text-[var(--pulse-teal)]"
+            className="text-sm font-semibold text-[var(--text-muted)] underline underline-offset-4 transition-colors hover:text-[var(--pulse-teal)]"
           >
             ⌨️ Prefer typing or native keyboard? Click here
           </button>
@@ -174,13 +174,13 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               value={typedAnswer}
               onChange={(e) => setTypedAnswer(e.target.value)}
               placeholder="Type your response here..."
-              className="min-h-[110px] w-full rounded-2xl border border-[var(--line)] bg-slate-50 p-4 text-lg text-[var(--chart-ink)] placeholder:text-slate-400 focus:border-[var(--pulse-teal)] focus:outline-none focus:ring-4 focus:ring-[rgba(31,111,99,0.12)]"
+              className="min-h-[110px] w-full rounded-2xl border border-[var(--line)] bg-transparent p-4 text-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--pulse-teal)] focus:outline-none focus:ring-4 focus:ring-[rgba(31,111,99,0.12)]"
               autoFocus
             />
             <button
               type="button"
               onClick={() => setShowVirtualKeyboard(!showVirtualKeyboard)}
-              className="absolute bottom-3 right-3 px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-xs font-black text-slate-700 flex items-center gap-1 shadow-sm"
+              className="absolute bottom-3 right-3 px-3 py-1.5 rounded-xl bg-[var(--glass-bg-strong)] hover:bg-slate-300 text-xs font-black text-[var(--text-primary)] flex items-center gap-1 shadow-sm"
             >
               ⌨️ {showVirtualKeyboard ? 'Hide Keyboard' : 'On-Screen Keyboard'}
             </button>

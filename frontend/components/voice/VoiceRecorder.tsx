@@ -166,7 +166,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
           >
             🎙️
           </button>
-          <span className="text-sm font-semibold text-slate-600">
+          <span className="text-sm font-semibold text-[var(--text-secondary)]">
             Tap to Speak ({getRecognitionLocale()})
           </span>
         </div>
@@ -197,18 +197,18 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       {isProcessing && (
         <div className="flex flex-col items-center gap-3 py-6">
           <div className="animate-spin text-4xl">⏳</div>
-          <span className="text-base font-semibold text-slate-700">
+          <span className="text-base font-semibold text-[var(--text-secondary)]">
             Transcribing audio...
           </span>
         </div>
       )}
 
       {transcriptionText && !isProcessing && (
-        <div className="w-full max-w-lg bg-white p-6 rounded-2xl border border-slate-200 shadow-md flex flex-col gap-4">
+        <div className="w-full max-w-lg bg-[var(--glass-bg)] p-6 rounded-2xl border border-[var(--line)] shadow-md flex flex-col gap-4">
           <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
             Heard Response:
           </div>
-          <p className="text-lg font-medium text-slate-800 bg-slate-50 p-4 rounded-xl border border-slate-100 italic">
+          <p className="text-lg font-medium text-[var(--text-primary)] bg-[var(--glass-bg-strong)] p-4 rounded-xl border border-[var(--glass-border)] italic">
             &quot;{transcriptionText}&quot;
           </p>
           <div className="flex gap-3">

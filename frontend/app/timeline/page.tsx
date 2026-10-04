@@ -43,8 +43,8 @@ const RECORD_TYPE_CONFIG: Record<
   other: {
     label: 'Other Record',
     emoji: '📋',
-    color: 'border-slate-500 bg-slate-500/10 text-slate-800',
-    badgeColor: 'bg-slate-100 text-slate-800 border-slate-200',
+    color: 'border-slate-500 bg-[var(--glass-bg-strong)]0/10 text-[var(--text-primary)]',
+    badgeColor: 'bg-[var(--glass-bg-strong)] text-[var(--text-primary)] border-[var(--line)]',
   },
 };
 
@@ -137,7 +137,7 @@ export default function TimelinePage() {
           <h1 className="text-3xl md:text-4xl font-extrabold text-[var(--chart-ink)]">
             Your Medical Timeline
           </h1>
-          <p className="text-slate-500 font-medium text-sm md:text-base">
+          <p className="text-[var(--text-muted)] font-medium text-sm md:text-base">
             Review your historical records and active clinical session before completing check-in.
           </p>
         </div>
@@ -154,7 +154,7 @@ export default function TimelinePage() {
                 className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
                   isSelected
                     ? 'bg-[var(--pulse-teal)] text-white shadow-md shadow-[rgba(31,111,99,0.2)] scale-105'
-                    : 'bg-white/80 border border-[var(--line)] text-slate-600 hover:bg-white hover:text-slate-900'
+                    : 'bg-[var(--glass-bg)]/80 border border-[var(--line)] text-[var(--text-secondary)] hover:bg-[var(--glass-bg)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 {filter.label}
@@ -164,7 +164,7 @@ export default function TimelinePage() {
         </div>
 
         {/* Timeline Container */}
-        <div className="w-full max-w-2xl bg-white/90 p-6 md:p-8 rounded-3xl shadow-xl border border-slate-100 flex flex-col gap-6">
+        <div className="w-full max-w-2xl bg-[var(--glass-bg)]/90 p-6 md:p-8 rounded-3xl shadow-xl border border-[var(--glass-border)] flex flex-col gap-6">
           {error && (
             <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800 text-sm font-medium">
               {error}
@@ -172,12 +172,12 @@ export default function TimelinePage() {
           )}
 
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-12 gap-3 text-slate-500">
+            <div className="flex flex-col items-center justify-center py-12 gap-3 text-[var(--text-muted)]">
               <div className="animate-spin text-4xl">⏳</div>
               <p className="font-semibold text-sm">Loading your timeline...</p>
             </div>
           ) : (
-            <div className="relative pl-6 md:pl-8 border-l-2 border-slate-200 flex flex-col gap-8 my-2">
+            <div className="relative pl-6 md:pl-8 border-l-2 border-[var(--line)] flex flex-col gap-8 my-2">
               {/* Active Clinical Session Event Node */}
               <div className="relative group">
                 {/* Timeline Dot */}
@@ -190,16 +190,16 @@ export default function TimelinePage() {
                     <span className="rounded-full bg-[rgba(31,111,99,0.14)] px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wider text-[var(--pulse-teal)]">
                       Current Intake Session
                     </span>
-                    <span className="text-xs font-semibold text-slate-500">
+                    <span className="text-xs font-semibold text-[var(--text-muted)]">
                       Today • In Progress
                     </span>
                   </div>
 
-                  <h3 className="text-base md:text-lg font-bold text-slate-900 mt-1">
+                  <h3 className="text-base md:text-lg font-bold text-[var(--text-primary)] mt-1">
                     Kiosk Check-in & Preliminary Triage
                   </h3>
 
-                  <p className="text-xs md:text-sm text-slate-600 mt-1">
+                  <p className="text-xs md:text-sm text-[var(--text-secondary)] mt-1">
                     {department ? `Department: ${department}` : 'General Consultation'}
                     {sessionId ? ` • Session ID #${sessionId}` : ''}
                   </p>
@@ -212,11 +212,11 @@ export default function TimelinePage() {
                 return (
                   <div key={rec.id} className="relative group">
                     {/* Timeline Dot */}
-                    <div className="absolute -left-[31px] md:-left-[39px] top-1.5 flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-full bg-white border-2 border-slate-300 text-sm shadow-sm ring-4 ring-white group-hover:border-[var(--pulse-teal)] transition-colors">
+                    <div className="absolute -left-[31px] md:-left-[39px] top-1.5 flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-full bg-[var(--glass-bg)] border-2 border-[var(--line-strong)] text-sm shadow-sm ring-4 ring-white group-hover:border-[var(--pulse-teal)] transition-colors">
                       {meta.emoji}
                     </div>
 
-                    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition-all hover:bg-white hover:border-slate-300 hover:shadow-md">
+                    <div className="rounded-2xl border border-[var(--line)] bg-[var(--glass-bg-strong)]/70 p-4 transition-all hover:bg-[var(--glass-bg)] hover:border-[var(--line-strong)] hover:shadow-md">
                       <div className="flex items-center justify-between gap-2 flex-wrap mb-1.5">
                         <span
                           className={`rounded-lg border px-2 py-0.5 text-[10px] font-extrabold tracking-wide ${meta.badgeColor}`}
@@ -228,18 +228,18 @@ export default function TimelinePage() {
                         </span>
                       </div>
 
-                      <h4 className="text-base font-bold text-slate-800">
+                      <h4 className="text-base font-bold text-[var(--text-primary)]">
                         {rec.title || rec.file_name || 'Medical Document'}
                       </h4>
 
                       {rec.description && (
-                        <p className="text-xs md:text-sm text-slate-600 mt-1 leading-relaxed">
+                        <p className="text-xs md:text-sm text-[var(--text-secondary)] mt-1 leading-relaxed">
                           {rec.description}
                         </p>
                       )}
 
                       {rec.file_name && (
-                        <div className="mt-2.5 flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-100">
+                        <div className="mt-2.5 flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-[var(--glass-border)]">
                           <span className="truncate max-w-[200px]">
                             📎 {rec.file_name}
                           </span>
@@ -260,9 +260,9 @@ export default function TimelinePage() {
 
               {/* Empty State when no records uploaded or no filtered matches */}
               {filteredRecords.length === 0 && (
-                <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 p-6 text-center">
+                <div className="rounded-2xl border border-dashed border-[var(--line)] bg-[var(--glass-bg-strong)]/50 p-6 text-center">
                   <span className="text-3xl mb-2 block">📄</span>
-                  <p className="text-sm font-semibold text-slate-600">
+                  <p className="text-sm font-semibold text-[var(--text-secondary)]">
                     {records.length === 0
                       ? 'No previous records uploaded. Continue to complete your check-in.'
                       : 'No records matching this category.'}

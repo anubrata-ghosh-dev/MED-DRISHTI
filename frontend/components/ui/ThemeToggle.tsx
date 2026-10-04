@@ -44,7 +44,7 @@ export const ThemeToggle: React.FC = () => {
           transition-all duration-300 ease-spring
           ${isDark
             ? 'translate-x-8 bg-[var(--pulse-teal)]'
-            : 'translate-x-1 bg-white'
+            : 'translate-x-1 bg-[var(--glass-bg)]'
           }
         `}
       >

@@ -17,7 +17,7 @@ export default function LanguagePage() {
 
   return (
     <KioskWrapper showLanguageTag={false}>
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-4xl flex flex-col justify-center min-h-[75vh] mx-auto gap-10 py-8">
         <ProgressStepper
           steps={['Language', 'Register', 'Consent', 'Intake']}
           currentStep={0}

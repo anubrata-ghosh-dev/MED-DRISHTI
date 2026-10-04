@@ -191,19 +191,19 @@ export function ChatBot() {
       </button>
 
       {/* Chat Panel - Full width bottom sheet on mobile, floating panel on desktop */}
-      <div className={`fixed z-[9998] flex flex-col overflow-hidden transition-all duration-300 ease-out border border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl
+      <div className={`fixed z-[9998] flex flex-col overflow-hidden transition-all duration-300 ease-out border border-[var(--line)] dark:border-slate-700 bg-[var(--glass-bg)]/95 dark:bg-slate-900/95 backdrop-blur-xl
         ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-[120%] opacity-0 pointer-events-none'}
         bottom-0 left-0 right-0 h-[85dvh] rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.5)]
         md:bottom-24 md:right-6 md:left-auto md:w-[400px] md:h-[600px] md:rounded-2xl md:shadow-2xl`}
       >
         {/* Header */}
         <div className="bg-gradient-to-br from-teal-700 to-teal-600 p-4 flex items-center gap-3 shrink-0 rounded-t-3xl md:rounded-t-2xl">
-          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl shrink-0">🩺</div>
+          <div className="w-10 h-10 rounded-full bg-[var(--glass-bg)]/20 flex items-center justify-center text-xl shrink-0">🩺</div>
           <div className="flex-1 min-w-0">
             <h3 className="m-0 text-white font-semibold text-base">Drishti Sahayak</h3>
             <p className="m-0 text-white/80 text-xs uppercase tracking-wider">AI Health Assistant</p>
           </div>
-          <div className="bg-white/20 rounded-full px-2.5 py-1 text-xs text-white font-medium flex items-center gap-1.5 shrink-0">
+          <div className="bg-[var(--glass-bg)]/20 rounded-full px-2.5 py-1 text-xs text-white font-medium flex items-center gap-1.5 shrink-0">
             🌐 {LANG_NAMES[language] || 'English'}
           </div>
         </div>
@@ -218,7 +218,7 @@ export function ChatBot() {
               <div className={`max-w-[85%] px-4 py-2.5 text-[0.9rem] leading-relaxed shadow-sm break-words whitespace-pre-wrap ${
                 msg.role === 'user' 
                   ? 'rounded-2xl rounded-br-sm bg-gradient-to-br from-teal-600 to-teal-500 text-white' 
-                  : 'rounded-2xl rounded-bl-sm bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700'
+                  : 'rounded-2xl rounded-bl-sm bg-[var(--glass-bg-strong)] dark:bg-slate-800 text-[var(--text-primary)] dark:text-slate-200 border border-[var(--line)] dark:border-slate-700'
               }`}>
                 {msg.content}
               </div>
@@ -229,7 +229,7 @@ export function ChatBot() {
           {isLoading && (
             <div className="flex items-end gap-2">
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-600 to-teal-500 flex items-center justify-center text-xs shrink-0 text-white">🩺</div>
-              <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex gap-1 items-center">
+              <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-[var(--glass-bg-strong)] dark:bg-slate-800 border border-[var(--line)] dark:border-slate-700 flex gap-1 items-center">
                 <div className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-bounce" style={{ animationDelay: '0ms' }} />
                 <div className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-bounce" style={{ animationDelay: '150ms' }} />
                 <div className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -256,7 +256,7 @@ export function ChatBot() {
         )}
 
         {/* Input Bar */}
-        <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex gap-2 items-center">
+        <div className="p-3 border-t border-[var(--line)] dark:border-slate-700 bg-[var(--glass-bg-strong)] dark:bg-slate-800/50 flex gap-2 items-center">
           <button
             onClick={startVoiceInput}
             disabled={isLoading}
@@ -281,7 +281,7 @@ export function ChatBot() {
             className={`flex-1 min-w-0 border rounded-xl px-3 py-2.5 text-sm outline-none transition-all ${
               isRecording 
                 ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 italic'
-                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:border-teal-500 dark:focus:border-teal-500'
+                : 'bg-[var(--glass-bg)] dark:bg-slate-900 border-[var(--line)] dark:border-slate-700 text-[var(--text-primary)] dark:text-slate-100 focus:border-teal-500 dark:focus:border-teal-500'
             } disabled:opacity-50`}
           />
 
@@ -299,7 +299,7 @@ export function ChatBot() {
         </div>
 
         {/* Disclaimer */}
-        <div className="px-4 py-2 text-center text-[10px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50">
+        <div className="px-4 py-2 text-center text-[10px] text-[var(--text-muted)] dark:text-slate-400 bg-[var(--glass-bg-strong)] dark:bg-slate-800/50">
           For emergencies, call 108. AI advice is not a substitute for professional medical care.
         </div>
       </div>

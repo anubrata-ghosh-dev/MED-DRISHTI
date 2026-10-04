@@ -16,14 +16,14 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
   const { patient, subjective, objective, assessment_triage } = summaryData;
 
   return (
-    <div className="w-full bg-white rounded-3xl border border-slate-200 shadow-xl p-8 flex flex-col gap-8">
+    <div className="w-full bg-[var(--glass-bg)] rounded-3xl border border-[var(--line)] shadow-xl p-8 flex flex-col gap-8">
       {/* Summary Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-[var(--glass-border)]">
         <div>
           <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
             Synthesized Clinical Intake Summary
           </span>
-          <h2 className="text-2xl font-black text-slate-900">
+          <h2 className="text-2xl font-black text-[var(--text-primary)]">
             {patient?.name || 'Patient'} ({patient?.gender}, {patient?.dob || 'N/A'})
           </h2>
         </div>
@@ -44,49 +44,49 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-          <h3 className="font-bold text-slate-800">Known medical history</h3>
+        <div className="rounded-2xl border border-[var(--line)] bg-[var(--glass-bg-strong)] p-4">
+          <h3 className="font-bold text-[var(--text-primary)]">Known medical history</h3>
           {subjective?.past_medical_history?.length ? subjective.past_medical_history.map((item: any, index: number) => (
-            <p key={index} className="mt-1 text-slate-700">{item.condition}{item.status ? ` · ${item.status}` : ''}{item.diagnosed ? ` · since ${item.diagnosed}` : ''}</p>
-          )) : <p className="mt-1 text-slate-500">No prior conditions recorded.</p>}
+            <p key={index} className="mt-1 text-[var(--text-secondary)]">{item.condition}{item.status ? ` · ${item.status}` : ''}{item.diagnosed ? ` · since ${item.diagnosed}` : ''}</p>
+          )) : <p className="mt-1 text-[var(--text-muted)]">No prior conditions recorded.</p>}
           {subjective?.past_surgical_history?.map((item: any, index: number) => (
-            <p key={`surgery-${index}`} className="mt-1 text-slate-700">Surgery: {item.procedure}{item.date ? ` · ${item.date}` : ''}</p>
+            <p key={`surgery-${index}`} className="mt-1 text-[var(--text-secondary)]">Surgery: {item.procedure}{item.date ? ` · ${item.date}` : ''}</p>
           ))}
           {subjective?.previous_visit_complaints?.map((complaint: string, index: number) => (
-            <p key={`visit-${index}`} className="mt-1 text-slate-700">Previous visit: {complaint}</p>
+            <p key={`visit-${index}`} className="mt-1 text-[var(--text-secondary)]">Previous visit: {complaint}</p>
           ))}
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-          <h3 className="font-bold text-slate-800">Medicines and allergies</h3>
-          <p className="mt-1 text-slate-700">Reported medicines: {subjective?.patient_reported_medications || 'Not recorded'}</p>
-          <p className="mt-1 text-slate-700">Reported allergies: {subjective?.patient_reported_allergies || 'Not recorded'}</p>
+        <div className="rounded-2xl border border-[var(--line)] bg-[var(--glass-bg-strong)] p-4">
+          <h3 className="font-bold text-[var(--text-primary)]">Medicines and allergies</h3>
+          <p className="mt-1 text-[var(--text-secondary)]">Reported medicines: {subjective?.patient_reported_medications || 'Not recorded'}</p>
+          <p className="mt-1 text-[var(--text-secondary)]">Reported allergies: {subjective?.patient_reported_allergies || 'Not recorded'}</p>
         </div>
         {(subjective?.family_history?.length > 0 || subjective?.personal_history?.length > 0 || subjective?.review_of_systems?.length > 0 || subjective?.ayush_history?.length > 0) && (
-          <div className="sm:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <h3 className="font-bold text-slate-800">Family and personal history</h3>
-            {subjective.family_history?.map((item: any, index: number) => <p key={`family-${index}`} className="mt-1 text-slate-700">Family: {item.condition} ({item.relationship}){item.relevance ? ` · ${item.relevance}` : ''}</p>)}
-            {subjective.personal_history?.map((item: any, index: number) => <p key={`personal-${index}`} className="mt-1 text-slate-700">{item.category}: {item.value || item.detail || 'Recorded'}</p>)}
-            {subjective.review_of_systems?.map((item: any, index: number) => <p key={`ros-${index}`} className="mt-1 text-slate-700">{item.system}: {item.finding || item.detail || 'Recorded'}</p>)}
-            {subjective.ayush_history?.map((item: any, index: number) => <p key={`ayush-${index}`} className="mt-1 text-slate-700">{item.parameter}: {item.value || item.detail || 'Recorded'}</p>)}
+          <div className="sm:col-span-2 rounded-2xl border border-[var(--line)] bg-[var(--glass-bg-strong)] p-4">
+            <h3 className="font-bold text-[var(--text-primary)]">Family and personal history</h3>
+            {subjective.family_history?.map((item: any, index: number) => <p key={`family-${index}`} className="mt-1 text-[var(--text-secondary)]">Family: {item.condition} ({item.relationship}){item.relevance ? ` · ${item.relevance}` : ''}</p>)}
+            {subjective.personal_history?.map((item: any, index: number) => <p key={`personal-${index}`} className="mt-1 text-[var(--text-secondary)]">{item.category}: {item.value || item.detail || 'Recorded'}</p>)}
+            {subjective.review_of_systems?.map((item: any, index: number) => <p key={`ros-${index}`} className="mt-1 text-[var(--text-secondary)]">{item.system}: {item.finding || item.detail || 'Recorded'}</p>)}
+            {subjective.ayush_history?.map((item: any, index: number) => <p key={`ayush-${index}`} className="mt-1 text-[var(--text-secondary)]">{item.parameter}: {item.value || item.detail || 'Recorded'}</p>)}
           </div>
         )}
       </div>
 
       {/* Subjective History */}
       <div className="flex flex-col gap-3">
-        <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+        <h3 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
           🗣️ Subjective Findings (Patient Intake)
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+          <div className="p-4 bg-[var(--glass-bg-strong)] rounded-2xl border border-[var(--line)]">
             <span className="text-xs font-bold text-slate-400 uppercase">Chief Complaint</span>
-            <p className="text-base font-semibold text-slate-800 mt-1">
+            <p className="text-base font-semibold text-[var(--text-primary)] mt-1">
               {subjective?.chief_complaint}
             </p>
           </div>
-          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+          <div className="p-4 bg-[var(--glass-bg-strong)] rounded-2xl border border-[var(--line)]">
             <span className="text-xs font-bold text-slate-400 uppercase">History of Present Illness</span>
-            <p className="text-base font-medium text-slate-700 mt-1">
+            <p className="text-base font-medium text-[var(--text-secondary)] mt-1">
               {subjective?.hpi}
             </p>
           </div>
@@ -98,21 +98,21 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
           <h3 className="text-base font-extrabold text-blue-950">Related information to review</h3>
           <p className="mt-1 text-xs text-blue-800">These links connect recorded history to uploaded results; they are prompts for clinical review, not diagnoses.</p>
           {objective.connections_for_review.map((connection: any, index: number) => (
-            <div key={index} className="mt-3 rounded-xl bg-white p-3 text-sm text-slate-700">
-              <p className="font-bold text-slate-900">{connection.title}</p>
+            <div key={index} className="mt-3 rounded-xl bg-[var(--glass-bg)] p-3 text-sm text-[var(--text-secondary)]">
+              <p className="font-bold text-[var(--text-primary)]">{connection.title}</p>
               <p className="mt-1">{connection.detail}</p>
-              <p className="mt-1 text-xs text-slate-500">Sources: {connection.sources?.join(', ')}</p>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">Sources: {connection.sources?.join(', ')}</p>
             </div>
           ))}
         </section>
       )}
 
       {objective?.document_diagnoses?.length > 0 && (
-        <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-          <h3 className="text-base font-extrabold text-slate-900">Diagnoses written in uploaded records</h3>
-          <p className="mt-1 text-xs text-slate-500">OCR text from source documents; verify against the original record.</p>
+        <section className="rounded-2xl border border-[var(--line)] bg-[var(--glass-bg-strong)] p-5">
+          <h3 className="text-base font-extrabold text-[var(--text-primary)]">Diagnoses written in uploaded records</h3>
+          <p className="mt-1 text-xs text-[var(--text-muted)]">OCR text from source documents; verify against the original record.</p>
           {objective.document_diagnoses.map((item: any, index: number) => (
-            <p key={index} className="mt-2 text-sm text-slate-700"><strong>{item.value}</strong> · {item.document_name} · {Math.round((item.confidence || 0) * 100)}% extraction confidence</p>
+            <p key={index} className="mt-2 text-sm text-[var(--text-secondary)]"><strong>{item.value}</strong> · {item.document_name} · {Math.round((item.confidence || 0) * 100)}% extraction confidence</p>
           ))}
         </section>
       )}
@@ -120,7 +120,7 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
       {/* Objective & Extracted Entities (with Confidence & Traceability) */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
             🔬 Objective Extracted Data (OCR & Documents)
           </h3>
           <span className="text-xs text-slate-400 font-semibold">
@@ -130,7 +130,7 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
 
         {/* Vitals */}
         <div className="space-y-2">
-          <span className="text-xs font-bold text-slate-500 uppercase">Extracted Vitals & Lab Values</span>
+          <span className="text-xs font-bold text-[var(--text-muted)] uppercase">Extracted Vitals & Lab Values</span>
           <div className="flex flex-wrap gap-2">
             {objective?.vitals_and_labs?.length === 0 ? (
               <span className="text-sm text-slate-400 italic">No OCR vitals extracted</span>
@@ -160,7 +160,7 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
 
         {/* Extracted Medications */}
         <div className="space-y-2 mt-2">
-          <span className="text-xs font-bold text-slate-500 uppercase">Extracted OCR Medications</span>
+          <span className="text-xs font-bold text-[var(--text-muted)] uppercase">Extracted OCR Medications</span>
           <div className="flex flex-wrap gap-2">
             {objective?.ocr_extracted_medications?.length === 0 ? (
               <span className="text-sm text-slate-400 italic">No OCR medications extracted</span>
@@ -190,7 +190,7 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
             {assessment_triage.red_flags.map((rf: any) => (
               <div
                 key={rf.id}
-                className="p-3 bg-white border border-red-200 rounded-xl flex items-center justify-between text-xs font-bold text-red-800"
+                className="p-3 bg-[var(--glass-bg)] border border-red-200 rounded-xl flex items-center justify-between text-xs font-bold text-red-800"
               >
                 <span>• {rf.description}</span>
                 <span className="uppercase text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded font-black">
@@ -205,7 +205,7 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
       {/* Past Medical Records */}
       {summaryData?.medical_records?.length > 0 && (
         <div className="flex flex-col gap-3">
-          <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
             📋 Past Medical Records ({summaryData.medical_records.length})
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -221,21 +221,21 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
               return (
                 <div
                   key={rec.id}
-                  className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col gap-1.5"
+                  className="p-4 bg-[var(--glass-bg-strong)] rounded-2xl border border-[var(--line)] flex flex-col gap-1.5"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase bg-slate-100 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase bg-[var(--glass-bg-strong)] px-2 py-0.5 rounded">
                       {typeLabels[rec.record_type] || '📋 Other'}
                     </span>
-                    <span className="text-sm font-bold text-slate-800">
+                    <span className="text-sm font-bold text-[var(--text-primary)]">
                       {rec.title || rec.file_name}
                     </span>
                   </div>
                   {rec.description && (
-                    <p className="text-xs text-slate-600">{rec.description}</p>
+                    <p className="text-xs text-[var(--text-secondary)]">{rec.description}</p>
                   )}
                   {rec.ocr_text && (
-                    <p className="text-xs font-mono text-slate-500 italic line-clamp-2">
+                    <p className="text-xs font-mono text-[var(--text-muted)] italic line-clamp-2">
                       &quot;{rec.ocr_text.substring(0, 150)}{rec.ocr_text.length > 150 ? '...' : ''}&quot;
                     </p>
                   )}
@@ -249,14 +249,14 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
       {/* Traceability Modal */}
       {selectedEntityTrace && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white max-w-md w-full rounded-3xl p-6 shadow-2xl flex flex-col gap-4 animate-scaleUp">
+          <div className="bg-[var(--glass-bg)] max-w-md w-full rounded-3xl p-6 shadow-2xl flex flex-col gap-4 animate-scaleUp">
             <div className="flex items-center justify-between border-b pb-3">
-              <h4 className="font-extrabold text-slate-900">
+              <h4 className="font-extrabold text-[var(--text-primary)]">
                 🔍 Entity Document Traceability
               </h4>
               <button
                 onClick={() => setSelectedEntityTrace(null)}
-                className="text-slate-400 hover:text-slate-700 text-xl font-bold"
+                className="text-slate-400 hover:text-[var(--text-secondary)] text-xl font-bold"
               >
                 ✕
               </button>
@@ -265,7 +265,7 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
             <div className="space-y-3 text-sm">
               <div>
                 <span className="text-xs font-bold text-slate-400 uppercase">Document Source</span>
-                <p className="font-bold text-slate-800">{selectedEntityTrace.document_name}</p>
+                <p className="font-bold text-[var(--text-primary)]">{selectedEntityTrace.document_name}</p>
               </div>
               <div>
                 <span className="text-xs font-bold text-slate-400 uppercase">Extracted Value</span>
@@ -273,13 +273,13 @@ export const ClinicalSummaryCard: React.FC<ClinicalSummaryCardProps> = ({
               </div>
               <div>
                 <span className="text-xs font-bold text-slate-400 uppercase">Original OCR Snippet</span>
-                <p className="p-3 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs text-slate-700 italic">
+                <p className="p-3 bg-[var(--glass-bg-strong)] border border-[var(--line)] rounded-xl font-mono text-xs text-[var(--text-secondary)] italic">
                   &quot;{selectedEntityTrace.source_text}&quot;
                 </p>
               </div>
               <div>
                 <span className="text-xs font-bold text-slate-400 uppercase">Confidence Score</span>
-                <p className="font-bold text-slate-800">
+                <p className="font-bold text-[var(--text-primary)]">
                   {Math.round(selectedEntityTrace.confidence * 100)}%
                 </p>
               </div>

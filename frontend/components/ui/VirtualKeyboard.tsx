@@ -109,7 +109,7 @@ export const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
               key={i}
               type="button"
               onClick={() => onKeyPress(char)}
-              className="h-11 rounded-xl bg-white border border-slate-200 text-lg font-bold text-slate-800 shadow-sm hover:bg-slate-100 active:scale-95 transition-all"
+              className="h-11 rounded-xl bg-[var(--glass-bg)] border border-[var(--line)] text-lg font-bold text-[var(--text-primary)] shadow-sm hover:bg-[var(--glass-bg-strong)] active:scale-95 transition-all"
             >
               {char}
             </button>
@@ -126,7 +126,7 @@ export const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
               key={i}
               type="button"
               onClick={() => onKeyPress(char)}
-              className="h-11 rounded-xl bg-white border border-slate-200 text-lg font-bold text-slate-800 shadow-sm hover:bg-slate-100 active:scale-95 transition-all"
+              className="h-11 rounded-xl bg-[var(--glass-bg)] border border-[var(--line)] text-lg font-bold text-[var(--text-primary)] shadow-sm hover:bg-[var(--glass-bg-strong)] active:scale-95 transition-all"
             >
               {char}
             </button>
@@ -145,7 +145,7 @@ export const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
                 key={cIdx}
                 type="button"
                 onClick={() => onKeyPress(char)}
-                className="flex-1 max-w-[50px] h-11 rounded-xl bg-white border border-slate-200 text-lg font-bold text-slate-800 shadow-sm hover:bg-slate-100 active:scale-95 transition-all"
+                className="flex-1 max-w-[50px] h-11 rounded-xl bg-[var(--glass-bg)] border border-[var(--line)] text-lg font-bold text-[var(--text-primary)] shadow-sm hover:bg-[var(--glass-bg-strong)] active:scale-95 transition-all"
               >
                 {char}
               </button>
@@ -165,7 +165,7 @@ export const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
               key={cIdx}
               type="button"
               onClick={() => onKeyPress(char)}
-              className="flex-1 max-w-[46px] h-11 rounded-xl bg-white border border-slate-200 text-lg font-bold text-slate-800 shadow-sm hover:bg-slate-100 active:scale-95 transition-all capitalize"
+              className="flex-1 max-w-[46px] h-11 rounded-xl bg-[var(--glass-bg)] border border-[var(--line)] text-lg font-bold text-[var(--text-primary)] shadow-sm hover:bg-[var(--glass-bg-strong)] active:scale-95 transition-all capitalize"
             >
               {char}
             </button>
@@ -176,9 +176,9 @@ export const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   );
 
   return (
-    <div className="w-full bg-slate-100/95 backdrop-blur-md border border-slate-300 rounded-3xl p-3 shadow-2xl flex flex-col gap-2 select-none animate-fadeIn">
+    <div className="w-full bg-[var(--glass-bg-strong)]/95 backdrop-blur-md border border-[var(--line-strong)] rounded-3xl p-3 shadow-2xl flex flex-col gap-2 select-none animate-fadeIn">
       {/* Keyboard Header */}
-      <div className="flex items-center justify-between px-2 pb-1 border-b border-slate-200">
+      <div className="flex items-center justify-between px-2 pb-1 border-b border-[var(--line)]">
         <div className="flex items-center gap-2">
           <span className="text-sm font-black text-[var(--pulse-teal)]">
             ⌨️ {getLanguageName()}
@@ -187,25 +187,25 @@ export const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
 
         {/* Tab Switcher for Indian Scripts */}
         {language !== 'en' && (
-          <div className="flex gap-1 bg-white p-1 rounded-xl border border-slate-200 text-xs font-bold">
+          <div className="flex gap-1 bg-[var(--glass-bg)] p-1 rounded-xl border border-[var(--line)] text-xs font-bold">
             <button
               type="button"
               onClick={() => setTab('consonants')}
-              className={`px-3 py-1 rounded-lg ${tab === 'consonants' ? 'bg-[var(--pulse-teal)] text-white' : 'text-slate-600'}`}
+              className={`px-3 py-1 rounded-lg ${tab === 'consonants' ? 'bg-[var(--pulse-teal)] text-white' : 'text-[var(--text-secondary)]'}`}
             >
               व्यंजन / Main
             </button>
             <button
               type="button"
               onClick={() => setTab('vowels')}
-              className={`px-3 py-1 rounded-lg ${tab === 'vowels' ? 'bg-[var(--pulse-teal)] text-white' : 'text-slate-600'}`}
+              className={`px-3 py-1 rounded-lg ${tab === 'vowels' ? 'bg-[var(--pulse-teal)] text-white' : 'text-[var(--text-secondary)]'}`}
             >
               स्वर / Vowels
             </button>
             <button
               type="button"
               onClick={() => setTab('numbers')}
-              className={`px-3 py-1 rounded-lg ${tab === 'numbers' ? 'bg-[var(--pulse-teal)] text-white' : 'text-slate-600'}`}
+              className={`px-3 py-1 rounded-lg ${tab === 'numbers' ? 'bg-[var(--pulse-teal)] text-white' : 'text-[var(--text-secondary)]'}`}
             >
               123
             </button>
@@ -216,7 +216,7 @@ export const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-2 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-xs font-black text-slate-600"
+            className="px-2 py-1 rounded-lg bg-[var(--glass-bg-strong)] hover:bg-slate-300 text-xs font-black text-[var(--text-secondary)]"
           >
             ✖ Close
           </button>
@@ -227,18 +227,18 @@ export const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
       {language === 'en' ? renderEnglishKeys() : renderScriptKeys()}
 
       {/* Bottom Control Bar */}
-      <div className="flex gap-2 px-2 pt-1 border-t border-slate-200">
+      <div className="flex gap-2 px-2 pt-1 border-t border-[var(--line)]">
         <button
           type="button"
           onClick={onClear}
-          className="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-xs font-extrabold text-slate-700 active:scale-95"
+          className="px-4 py-2.5 rounded-xl bg-[var(--glass-bg-strong)] hover:bg-slate-300 text-xs font-extrabold text-[var(--text-secondary)] active:scale-95"
         >
           Clear
         </button>
         <button
           type="button"
           onClick={onSpace}
-          className="flex-1 py-2.5 rounded-xl bg-white border border-slate-300 text-xs font-extrabold text-slate-700 shadow-sm hover:bg-slate-50 active:scale-95"
+          className="flex-1 py-2.5 rounded-xl bg-[var(--glass-bg)] border border-[var(--line-strong)] text-xs font-extrabold text-[var(--text-secondary)] shadow-sm hover:bg-[var(--glass-bg-strong)] active:scale-95"
         >
           Space ␣
         </button>

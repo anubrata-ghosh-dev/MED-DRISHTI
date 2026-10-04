@@ -19,7 +19,7 @@ const RECORD_TYPES = [
   { value: 'prescription', label: '💊 Prescription', color: 'bg-purple-50 border-purple-200 text-purple-800' },
   { value: 'discharge_summary', label: '🏥 Discharge Summary', color: 'bg-amber-50 border-amber-200 text-amber-800' },
   { value: 'imaging', label: '📷 X-Ray / Imaging', color: 'bg-teal-50 border-teal-200 text-teal-800' },
-  { value: 'other', label: '📋 Other', color: 'bg-slate-50 border-slate-200 text-slate-800' },
+  { value: 'other', label: '📋 Other', color: 'bg-[var(--glass-bg-strong)] border-[var(--line)] text-[var(--text-primary)]' },
 ];
 
 export default function MedicalHistoryPage() {
@@ -126,7 +126,7 @@ export default function MedicalHistoryPage() {
 
   return (
     <KioskWrapper>
-      <div className="w-full flex flex-col items-center gap-6">
+      <div className="w-full flex flex-col items-center justify-center min-h-[75vh] gap-10 py-8">
         <ProgressStepper
           steps={['Language', 'Register', 'Consent', 'Department', 'Intake', 'Records']}
           currentStep={5}
@@ -137,17 +137,17 @@ export default function MedicalHistoryPage() {
           <p className="text-xs font-bold uppercase tracking-wider text-[var(--pulse-teal)]">
             Step 5 • Medical History
           </p>
-          <h2 className="text-3xl font-extrabold text-slate-800">
+          <h2 className="text-3xl font-extrabold text-[var(--text-primary)]">
             Upload Previous Medical Records
           </h2>
-          <p className="text-slate-500 font-medium text-sm max-w-md mx-auto">
+          <p className="text-[var(--text-muted)] font-medium text-sm max-w-md mx-auto">
             Share your old prescriptions, lab reports, X-rays, or diagnostic reports.
             This helps the doctor review your complete medical history.
           </p>
         </div>
 
         {/* Main Upload Card */}
-        <div className="w-full max-w-2xl bg-white p-8 rounded-3xl shadow-xl border border-slate-100 flex flex-col gap-6 animate-fadeIn">
+        <div className="w-full max-w-2xl bg-[var(--glass-bg)] p-8 rounded-3xl shadow-xl border border-[var(--glass-border)] flex flex-col gap-6 animate-fadeIn">
           {error && (
             <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm font-medium">
               {error}
@@ -162,7 +162,7 @@ export default function MedicalHistoryPage() {
 
           {/* Record Type Selector */}
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+            <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">
               Record Type
             </label>
             <div className="flex flex-wrap gap-2">
@@ -183,7 +183,7 @@ export default function MedicalHistoryPage() {
           </div>
 
           {/* File Drop Zone */}
-          <div className="rounded-2xl border-2 border-dashed border-[var(--line)] bg-slate-50 p-6 text-center transition-colors hover:border-[var(--pulse-teal)] hover:bg-[rgba(31,111,99,0.04)] flex flex-col items-center gap-3">
+          <div className="rounded-2xl border-2 border-dashed border-[var(--line)] bg-[var(--glass-bg-strong)] p-6 text-center transition-colors hover:border-[var(--pulse-teal)] hover:bg-[rgba(31,111,99,0.04)] flex flex-col items-center gap-3">
             <input
               type="file"
               id="medical-file-upload"
@@ -196,7 +196,7 @@ export default function MedicalHistoryPage() {
               className="cursor-pointer flex flex-col items-center gap-2"
             >
               <span className="text-5xl">📂</span>
-              <span className="text-base font-bold text-slate-700">
+              <span className="text-base font-bold text-[var(--text-secondary)]">
                 {selectedFile ? selectedFile.name : 'Tap to select a file'}
               </span>
               <span className="text-xs text-slate-400">
@@ -207,11 +207,11 @@ export default function MedicalHistoryPage() {
 
           {/* Image preview */}
           {previewUrl && (
-            <div className="rounded-2xl overflow-hidden border border-slate-200 max-h-48">
+            <div className="rounded-2xl overflow-hidden border border-[var(--line)] max-h-48">
               <img
                 src={previewUrl}
                 alt="Preview"
-                className="w-full h-full object-contain bg-slate-100"
+                className="w-full h-full object-contain bg-[var(--glass-bg-strong)]"
               />
             </div>
           )}
@@ -220,7 +220,7 @@ export default function MedicalHistoryPage() {
           {selectedFile && (
             <div className="flex flex-col gap-4 animate-fadeIn">
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase">
+                <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">
                   Title / Label
                 </label>
                 <input
@@ -228,19 +228,19 @@ export default function MedicalHistoryPage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Blood Test Report - June 2024"
-                  className="rounded-xl border border-[var(--line)] bg-slate-50 px-4 py-3 text-sm text-[var(--chart-ink)] focus:outline-none focus:ring-2 focus:ring-[rgba(31,111,99,0.18)]"
+                  className="rounded-xl border border-[var(--line)] bg-[var(--glass-bg-strong)] px-4 py-3 text-sm text-[var(--chart-ink)] focus:outline-none focus:ring-2 focus:ring-[rgba(31,111,99,0.18)]"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-slate-700 uppercase">
+                <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">
                   Notes (Optional)
                 </label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Add any notes about this record, e.g. 'Diagnosed with diabetes in 2022', 'Post-surgery follow-up report'..."
-                  className="min-h-[80px] rounded-xl border border-[var(--line)] bg-slate-50 p-4 text-sm text-[var(--chart-ink)] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[rgba(31,111,99,0.18)]"
+                  className="min-h-[80px] rounded-xl border border-[var(--line)] bg-[var(--glass-bg-strong)] p-4 text-sm text-[var(--chart-ink)] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[rgba(31,111,99,0.18)]"
                 />
               </div>
 
@@ -256,7 +256,7 @@ export default function MedicalHistoryPage() {
 
           {/* Uploaded Records List */}
           {records.length > 0 && (
-            <div className="flex flex-col gap-3 pt-4 border-t border-slate-100">
+            <div className="flex flex-col gap-3 pt-4 border-t border-[var(--glass-border)]">
               <span className="text-xs font-black text-slate-400 uppercase tracking-wider">
                 📋 Uploaded Records ({records.length})
               </span>
@@ -267,18 +267,18 @@ export default function MedicalHistoryPage() {
                   return (
                     <div
                       key={rec.id}
-                      className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl transition-all hover:border-slate-300"
+                      className="flex items-center justify-between p-3 bg-[var(--glass-bg-strong)] border border-[var(--line)] rounded-xl transition-all hover:border-[var(--line-strong)]"
                     >
                       <div className="flex items-center gap-3 flex-1 min-w-0">
                         <span className={`px-2 py-1 rounded-lg border text-[10px] font-bold whitespace-nowrap ${typeInfo.color}`}>
                           {typeInfo.label}
                         </span>
                         <div className="flex flex-col min-w-0">
-                          <span className="text-sm font-bold text-slate-800 truncate">
+                          <span className="text-sm font-bold text-[var(--text-primary)] truncate">
                             {rec.title || rec.file_name}
                           </span>
                           {rec.description && (
-                            <span className="text-xs text-slate-500 truncate">
+                            <span className="text-xs text-[var(--text-muted)] truncate">
                               {rec.description}
                             </span>
                           )}

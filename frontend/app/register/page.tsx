@@ -113,7 +113,7 @@ export default function RegisterPage() {
 
   return (
     <KioskWrapper>
-      <div className="w-full max-w-3xl">
+      <div className="w-full max-w-3xl flex flex-col justify-center min-h-[75vh] mx-auto gap-8 py-8">
         <ProgressStepper
           steps={[t.stepLanguage, t.stepRegister, t.stepConsent, t.stepIntake, 'Records']}
           currentStep={1}
@@ -122,14 +122,14 @@ export default function RegisterPage() {
         <div className="clinical-card rounded-[2rem] p-5 md:p-8">
           <div className="mb-6 flex items-start justify-between gap-4">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">
                 {t.regPageTag}
               </p>
               <h2 className="mt-2 text-3xl text-[var(--chart-ink)] md:text-4xl font-extrabold">
                 {t.regPageTitle}
               </h2>
             </div>
-            <div className="rounded-full border border-[var(--line)] bg-white/80 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-600">
+            <div className="rounded-full border border-[var(--line)] bg-[var(--glass-bg)]/80 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--text-secondary)]">
               {t.regPageSub}: {selectedLangObj?.nativeName || 'English'}
             </div>
           </div>
@@ -144,7 +144,7 @@ export default function RegisterPage() {
             {/* Full Name */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
+                <label className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-muted)]">
                   {t.nameLabel}
                 </label>
                 <button
@@ -168,7 +168,7 @@ export default function RegisterPage() {
 
             {/* Visual Gender Selection for Illiterate Patients */}
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
+              <label className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-muted)]">
                 {t.genderLabel}
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -184,11 +184,11 @@ export default function RegisterPage() {
                     className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition-all ${
                       gender === g.value
                         ? 'border-[var(--pulse-teal)] bg-[rgba(31,111,99,0.08)] ring-2 ring-[rgba(31,111,99,0.2)]'
-                        : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                        : 'border-[var(--line)] bg-[var(--glass-bg-strong)] hover:bg-[var(--glass-bg-strong)]'
                     }`}
                   >
                     <span className="text-3xl mb-1">{g.icon}</span>
-                    <span className="text-xs font-bold text-slate-700">{g.label}</span>
+                    <span className="text-xs font-bold text-[var(--text-secondary)]">{g.label}</span>
                   </button>
                 ))}
               </div>
@@ -196,7 +196,7 @@ export default function RegisterPage() {
 
             <div className="grid gap-5 md:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
+                <label className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-muted)]">
                   {t.dobLabel}
                 </label>
                 <input
@@ -209,7 +209,7 @@ export default function RegisterPage() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
+                  <label className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-muted)]">
                     {t.phoneLabel}
                   </label>
                   <button
@@ -233,7 +233,7 @@ export default function RegisterPage() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
+                <label className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-muted)]">
                   {t.abhaLabel}
                 </label>
                 <button

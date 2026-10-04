@@ -48,7 +48,7 @@ export default function ConsentPage() {
 
   return (
     <KioskWrapper>
-      <div className="w-full flex flex-col items-center gap-6">
+      <div className="w-full flex flex-col items-center justify-center min-h-[75vh] gap-10 py-8">
         <ProgressStepper
           steps={[t.stepLanguage, t.stepRegister, t.stepConsent, 'Department', t.stepIntake, 'Records']}
           currentStep={2}
@@ -58,29 +58,29 @@ export default function ConsentPage() {
           <p className="text-xs font-bold uppercase tracking-wider text-[var(--pulse-teal)]">
             {t.consentTag}
           </p>
-          <h2 className="text-3xl font-extrabold text-slate-800">
+          <h2 className="text-3xl font-extrabold text-[var(--text-primary)]">
             {t.consentTitle}
           </h2>
-          <p className="text-slate-500 font-medium text-sm">
+          <p className="text-[var(--text-muted)] font-medium text-sm">
             {t.consentSub}
           </p>
         </div>
 
-        <div className="w-full max-w-lg bg-white p-8 rounded-3xl shadow-xl border border-slate-100 flex flex-col gap-6">
+        <div className="w-full max-w-lg bg-[var(--glass-bg)] p-8 rounded-3xl shadow-xl border border-[var(--glass-border)] flex flex-col gap-6">
           {error && (
             <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-sm font-medium">
               {error}
             </div>
           )}
 
-          <div className="h-48 overflow-y-auto p-4 bg-slate-50 rounded-2xl border border-slate-200 text-sm text-slate-600 leading-relaxed space-y-3">
-            <h4 className="font-bold text-slate-800">1. Data Collection & Processing</h4>
+          <div className="h-48 overflow-y-auto p-4 bg-[var(--glass-bg-strong)] rounded-2xl border border-[var(--line)] text-sm text-[var(--text-secondary)] leading-relaxed space-y-3">
+            <h4 className="font-bold text-[var(--text-primary)]">1. Data Collection & Processing</h4>
             <p>{t.consentPoint1}</p>
 
-            <h4 className="font-bold text-slate-800">2. Security & ABDM Standards</h4>
+            <h4 className="font-bold text-[var(--text-primary)]">2. Security & ABDM Standards</h4>
             <p>{t.consentPoint2}</p>
 
-            <h4 className="font-bold text-slate-800">3. Rights & Consultations</h4>
+            <h4 className="font-bold text-[var(--text-primary)]">3. Rights & Consultations</h4>
             <p>{t.consentPoint3}</p>
           </div>
 

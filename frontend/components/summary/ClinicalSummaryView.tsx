@@ -9,8 +9,8 @@ interface ClinicalSummaryViewProps {
 export const ClinicalSummaryView: React.FC<ClinicalSummaryViewProps> = ({ summary }) => {
   if (!summary) {
     return (
-      <div className="p-6 bg-slate-50 rounded-xl border border-slate-200">
-        <p className="text-slate-500">No summary available</p>
+      <div className="p-6 bg-[var(--glass-bg-strong)] rounded-xl border border-[var(--line)]">
+        <p className="text-[var(--text-muted)]">No summary available</p>
       </div>
     );
   }
@@ -39,44 +39,44 @@ export const ClinicalSummaryView: React.FC<ClinicalSummaryViewProps> = ({ summar
       </div>
 
       {/* Subjective (Patient-Reported) Section */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div className="bg-[var(--glass-bg)] rounded-xl border border-[var(--line)] p-6 shadow-sm">
         <h3 className="text-lg font-bold text-[var(--chart-ink)] mb-4 flex items-center gap-2">
           📋 Subjective (Patient-Reported)
         </h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1">
+            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-1">
               Chief Complaint
             </label>
-            <p className="text-base text-slate-800 bg-slate-50 p-3 rounded-lg">
+            <p className="text-base text-[var(--text-primary)] bg-[var(--glass-bg-strong)] p-3 rounded-lg">
               {subjective?.chief_complaint || '(Not recorded)'}
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1">
+            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-1">
               History of Present Illness (HPI)
             </label>
-            <p className="text-base text-slate-800 bg-slate-50 p-3 rounded-lg whitespace-pre-wrap">
+            <p className="text-base text-[var(--text-primary)] bg-[var(--glass-bg-strong)] p-3 rounded-lg whitespace-pre-wrap">
               {subjective?.hpi || '(Not recorded)'}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">
+              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-1">
                 Current Medications
               </label>
-              <p className="text-base text-slate-800 bg-slate-50 p-3 rounded-lg">
+              <p className="text-base text-[var(--text-primary)] bg-[var(--glass-bg-strong)] p-3 rounded-lg">
                 {subjective?.patient_reported_medications || '(None reported)'}
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">
+              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-1">
                 Allergies
               </label>
-              <p className="text-base text-slate-800 bg-slate-50 p-3 rounded-lg">
+              <p className="text-base text-[var(--text-primary)] bg-[var(--glass-bg-strong)] p-3 rounded-lg">
                 {subjective?.patient_reported_allergies || '(None reported)'}
               </p>
             </div>
@@ -85,22 +85,22 @@ export const ClinicalSummaryView: React.FC<ClinicalSummaryViewProps> = ({ summar
       </div>
 
       {/* Objective (Clinically-Extracted) Section */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div className="bg-[var(--glass-bg)] rounded-xl border border-[var(--line)] p-6 shadow-sm">
         <h3 className="text-lg font-bold text-[var(--chart-ink)] mb-4 flex items-center gap-2">
           🔬 Objective (Extracted from Documents)
         </h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">
               Vitals & Labs ({objective?.vitals_and_labs?.length || 0} items)
             </label>
             {objective?.vitals_and_labs && objective.vitals_and_labs.length > 0 ? (
               <ul className="space-y-2">
                 {objective.vitals_and_labs.map((item: any, idx: number) => (
-                  <li key={idx} className="bg-slate-50 p-3 rounded-lg text-sm">
+                  <li key={idx} className="bg-[var(--glass-bg-strong)] p-3 rounded-lg text-sm">
                     <span className="font-semibold">{item.name}:</span> {item.value} {item.unit || ''}
                     {item.confidence && (
-                      <span className="text-xs text-slate-500 ml-2">
+                      <span className="text-xs text-[var(--text-muted)] ml-2">
                         (confidence: {(item.confidence * 100).toFixed(0)}%)
                       </span>
                     )}
@@ -108,21 +108,21 @@ export const ClinicalSummaryView: React.FC<ClinicalSummaryViewProps> = ({ summar
                 ))}
               </ul>
             ) : (
-              <p className="text-slate-500 text-sm">No vitals/labs extracted</p>
+              <p className="text-[var(--text-muted)] text-sm">No vitals/labs extracted</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">
               OCR-Extracted Medications ({objective?.ocr_extracted_medications?.length || 0} items)
             </label>
             {objective?.ocr_extracted_medications && objective.ocr_extracted_medications.length > 0 ? (
               <ul className="space-y-2">
                 {objective.ocr_extracted_medications.map((item: any, idx: number) => (
-                  <li key={idx} className="bg-slate-50 p-3 rounded-lg text-sm">
+                  <li key={idx} className="bg-[var(--glass-bg-strong)] p-3 rounded-lg text-sm">
                     {item.text}
                     {item.confidence && (
-                      <span className="text-xs text-slate-500 ml-2">
+                      <span className="text-xs text-[var(--text-muted)] ml-2">
                         (confidence: {(item.confidence * 100).toFixed(0)}%)
                       </span>
                     )}
@@ -130,12 +130,12 @@ export const ClinicalSummaryView: React.FC<ClinicalSummaryViewProps> = ({ summar
                 ))}
               </ul>
             ) : (
-              <p className="text-slate-500 text-sm">No medications extracted from documents</p>
+              <p className="text-[var(--text-muted)] text-sm">No medications extracted from documents</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">
               Total Documents Analyzed
             </label>
             <p className="text-base font-bold text-[var(--pulse-teal)]">
@@ -146,13 +146,13 @@ export const ClinicalSummaryView: React.FC<ClinicalSummaryViewProps> = ({ summar
       </div>
 
       {/* Assessment & Triage Section */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div className="bg-[var(--glass-bg)] rounded-xl border border-[var(--line)] p-6 shadow-sm">
         <h3 className="text-lg font-bold text-[var(--chart-ink)] mb-4 flex items-center gap-2">
           🚨 Assessment & Triage
         </h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">
               Triage Status
             </label>
             <div
@@ -171,7 +171,7 @@ export const ClinicalSummaryView: React.FC<ClinicalSummaryViewProps> = ({ summar
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">
               Red Flags ({assessment_triage?.red_flags_count || 0})
             </label>
             {assessment_triage?.red_flags && assessment_triage.red_flags.length > 0 ? (
@@ -188,14 +188,14 @@ export const ClinicalSummaryView: React.FC<ClinicalSummaryViewProps> = ({ summar
                     }`}
                   >
                     <div className="font-semibold text-sm">{flag.description}</div>
-                    <div className="text-xs text-slate-600 mt-1">
+                    <div className="text-xs text-[var(--text-secondary)] mt-1">
                       Rule: {flag.rule_id} | Severity: {flag.severity}
                     </div>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-slate-500 text-sm">No red flags detected</p>
+              <p className="text-[var(--text-muted)] text-sm">No red flags detected</p>
             )}
           </div>
         </div>
